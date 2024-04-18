@@ -1,0 +1,79 @@
+﻿@model WebTeam.Data.FeedBack
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>FeedBack</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="FeedBackID" />
+            <div class="form-group">
+                <label asp-for="Content" class="control-label"></label>
+                <input asp-for="Content" class="form-control" />
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SentDate" class="control-label"></label>
+                <input asp-for="SentDate" class="form-control" />
+                <span asp-validation-for="SentDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="hidden" asp-for="ArticleId" />
+                <span asp-validation-for="ArticleId" class="text-danger"></span>
+            </div>
+            <div id="countdown"></div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+<script>
+    // Lấy thời gian hiện tại
+    var currentTime = new Date();
+
+    // Lấy thời gian gửi phản hồi
+    var sentDate = new Date("@Model.Article.submissionDate");
+
+    // Tính toán thời gian còn lại (tính theo mili giây)
+    var timeDiff = sentDate.getTime() + (14 * 24 * 60 * 60 * 1000) - currentTime.getTime();
+
+    // Hàm để cập nhật thời gian đếm ngược
+    function updateCountdown() {
+        // Chuyển đổi thời gian còn lại thành ngày, giờ, phút và giây
+        var days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+        // Hiển thị thời gian đếm ngược trên trang
+        document.getElementById("countdown").innerHTML = "Time remaining: " + days + " days, " + hours + " hours, " + minutes + " minutes, " + seconds + " seconds";
+
+        // Giảm thời gian còn lại mỗi giây
+        timeDiff -= 1000;
+
+        // Kiểm tra xem thời gian còn lại có hết không
+        if (timeDiff < 0) {
+            clearInterval(countdownInterval);
+            document.getElementById("countdown").innerHTML = "Time's up!";
+        }
+    }
+
+    // Gọi hàm cập nhật thời gian đếm ngược mỗi giây
+    var countdownInterval = setInterval(updateCountdown, 1000);
+</script>

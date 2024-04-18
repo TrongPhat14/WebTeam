@@ -1,0 +1,804 @@
+﻿/* All Submission */
+a {
+    text-decoration: none;
+    color: #000;
+}
+
+    a:hover {
+        color: #000;
+    }
+/* All Submission */
+.main_content {
+    margin-top: 25px;
+    display: flex;
+}
+
+    .main_content .left_category {
+        flex: 2;
+        display: block;
+        background-color: #dde9d566;
+        max-width: 300px;
+        height: 1400px;
+    }
+
+        .main_content .left_category ul,
+        .menu_sidebar ul {
+            display: block;
+        }
+
+            .main_content .left_category ul li,
+            .menu_sidebar ul li {
+                line-height: 55px;
+                height: 60px;
+            }
+
+                .main_content .left_category ul li.active_link,
+                .menu_sidebar ul li.active_link {
+                    background-color: #304d447d;
+                }
+
+                    .main_content .left_category ul li.active_link a,
+                    .menu_sidebar ul li.active_link a {
+                        color: #fff;
+                    }
+
+                .main_content .left_category ul li a {
+                    font-size: 20px;
+                    text-align: justify;
+                    margin-left: 57px;
+                }
+
+.search {
+    width: 100%;
+    position: relative;
+    display: flex;
+}
+
+.searchTerm {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #000;
+    padding: 5px;
+    outline: none;
+    color: #9dbfaf;
+    height: 100%;
+}
+
+    .searchTerm:focus {
+        color: #000;
+    }
+
+.searchButton {
+    margin-bottom: 5px;
+    position: relative;
+    right: 10%;
+    border: none;
+    background: none;
+    outline: none;
+    width: 40px;
+    height: 36px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+/*Resize the wrap to see the search bar change!*/
+.wrap {
+    display: flex;
+    width: 30%;
+}
+
+.right_category {
+    margin-left: 40px;
+}
+
+.subnavigate {
+    display: flex;
+    justify-content: space-between;
+}
+
+.submenu button {
+    outline: none;
+    border: none;
+    background: none;
+    font-size: 20px;
+    margin-right: 5%;
+}
+
+.subnavigate ul,
+.sub_nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+    .subnavigate ul li,
+    .sub_nav ul li {
+        display: inline-block;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 20px;
+        transition: ease-in-out 0.7s active;
+        margin-right: 25px;
+    }
+
+        .subnavigate ul li.active,
+        .sub_nav ul li.active {
+            font-weight: 600;
+            border-bottom: 5px solid #304d447d;
+        }
+
+.content_table {
+    display: none;
+}
+
+    .content_table.active {
+        display: block;
+        animation: slideIn 1s forwards;
+    }
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0%);
+    }
+}
+
+.table_submission,
+.table_display_deadline,
+.table_feedback {
+    margin-top: 45px;
+}
+
+    .table_submission thead,
+    .table_display_deadline thead,
+    .table_feedback thead {
+        background-color: #dde9d533;
+        height: 55px;
+        text-align: center;
+    }
+
+        .table_submission thead tr th,
+        .table_display_deadline thead tr th,
+        .table_feedback thead tr th {
+            padding-bottom: 15px;
+            font-size: 18px;
+            text-transform: uppercase;
+        }
+
+    .table_submission tbody tr td {
+        padding: 20px 40px;
+        text-align: center;
+    }
+
+        .table_submission tbody tr td p,
+        .table_feedback tbody tr td p {
+            font-size: 17px;
+        }
+
+            .table_submission tbody tr td p.not_submitted {
+                color: #ea0d0d;
+            }
+
+        .table_submission tbody tr td.date_time,
+        .table_feedback tbody tr td.date_time {
+            font-weight: 600;
+            text-align: center;
+            color: #2f1a1a;
+            font-size: 17px;
+        }
+
+        .table_submission tbody tr td p.submitted_status,
+        .table_feedback tbody tr td p.reviewed_status {
+            color: #0e34fd;
+            font-size: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .table_submission tbody tr td p.not_submitted_status,
+        .table_feedback tbody tr td p.unreviewed_status {
+            color: #ea0d0d;
+            font-size: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .table_submission tbody tr td.action button,
+        .table_submission tbody tr td.action a {
+            outline: none;
+            border: none;
+            background: none;
+            font-size: 25px;
+            color: #363f30;
+            padding: 15px 20px;
+            text-align: center;
+        }
+
+            .table_submission tbody tr td.action button:hover {
+                color: #363f30ca;
+            }
+
+/* Set Deadline */
+.set-new,
+.history_deadline,
+.edit_deadline {
+    margin: 35px 0;
+    background-color: #dde9d533;
+    height: 1300px;
+    box-shadow: 0 4px 4px 0 #00000040;
+    padding: 20px 50px;
+}
+
+    .set-new p,
+    .edit_deadline p {
+        padding: 20px 0 50px 0;
+        font-size: 30px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+.select_submission_round,
+.select_term,
+.set_deadline,
+.select_category {
+    margin-bottom: 50px;
+    font-size: 17px;
+}
+
+    .select_submission_round label,
+    .select_term label,
+    .set_deadline label,
+    .select_category label {
+        font-size: 18px;
+        font-weight: 600;
+        padding-bottom: 10px;
+    }
+
+    .set_deadline input {
+        margin-left: 10px;
+        width: 300px;
+        height: 45px;
+        border: none;
+        border-radius: 5px;
+        padding: 10px;
+        background-color: #ffffff;
+    }
+
+.table_display_deadline tr td p,
+.table_display_deadline tbody tr td.submission_round {
+    font-size: 19px;
+}
+
+.table_display_deadline tbody tr td {
+    padding: 20px 40px;
+}
+
+    .table_display_deadline tbody tr td.deadline {
+        font-size: 19px;
+        font-weight: 600;
+        text-align: center;
+        color: #2f1a1a;
+    }
+
+.table_display_deadline tr td.action button,
+.table_display_deadline tr td.action a {
+    outline: none;
+    border: none;
+    background: none;
+    font-size: 20px;
+    color: #363f30;
+    padding: 15px 10px;
+    text-align: center;
+}
+
+/* Show More Information */
+.main_information {
+    background-color: #dde9d59d;
+    width: 100%;
+    height: 1300px;
+    padding: 50px 100px;
+}
+
+    .main_information h3 {
+        text-transform: uppercase;
+        margin-bottom: 50px;
+    }
+
+.name,
+.submission_round-details,
+.deadline-details,
+.create_date,
+.created_by,
+.category_deadline {
+    width: 100%;
+    font-size: 20px;
+    margin-bottom: 25px;
+}
+
+    .name span:first-child,
+    .submission_round-details span:first-child,
+    .deadline-details span:first-child,
+    .create_date span:first-child,
+    .created_by span:first-child,
+    .category_deadline span:first-child {
+        font-weight: 700;
+        font-size: 22px;
+    }
+
+/* Feedback Provider */
+.table_feedback tbody tr td.feedback_content {
+    width: 330px;
+    margin-right: 10px;
+}
+
+.table_feedback tbody tr td {
+    padding: 20px 40px;
+}
+
+    .table_feedback tbody tr td.action button,
+    .table_feedback tbody tr td.action a {
+        outline: none;
+        border: none;
+        background: none;
+        font-size: 20px;
+        padding: 0 5px;
+    }
+
+.author_article p {
+    display: block;
+    width: 100%;
+}
+
+.author_name,
+.submission_title,
+.date_time_modified,
+.status,
+.content_container,
+.date_time_feedback,
+.feedback {
+    max-width: 500px;
+}
+
+.content_container {
+    max-height: 250px;
+    overflow-x: auto;
+}
+
+.form-control:focus,
+.form-select:focus {
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255);
+}
+
+/* Profile */
+.profile_content {
+    display: flex;
+}
+
+.left_profile,
+.right_profile {
+    flex: 4;
+    margin-right: 50px;
+}
+
+.user_info img {
+    width: 120px;
+    height: 120px;
+    border: 1px solid #000;
+    border-radius: 50%;
+    margin: 0 20px 30px;
+}
+
+.right_profile ul li a {
+    width: 642px;
+    height: 62px;
+}
+
+.right_profile ul li {
+    transition: all 0.7s ease-in-out;
+}
+
+.btn_edit_psw {
+    margin: 0;
+    padding: 0;
+}
+
+.password_user input {
+    width: 75%;
+}
+
+.mainDiv {
+    display: flex;
+    min-height: 100%;
+    align-items: center;
+    justify-content: center;
+    background-color: #f9f9f9;
+    font-family: "Open Sans", sans-serif;
+}
+
+.modal-header {
+    border-bottom: 0;
+}
+
+.modal-footer {
+    border-top: 0;
+}
+
+.cardStyle {
+    width: 500px;
+    border-color: white;
+    background: #fff;
+    /* padding: 30px 0; */
+    border-radius: 4px;
+    /* margin: 30px 0; */
+    box-shadow: 0px 0 2px 0 rgba(0, 0, 0, 0.25);
+}
+
+#signupLogo {
+    max-height: 100px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.formTitle {
+    font-weight: 600;
+    margin-top: 20px;
+    color: #2f2d3b;
+    text-align: center;
+}
+
+.inputLabel {
+    font-size: 15px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 5px;
+    margin-top: 30px;
+}
+
+.inputDiv {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+}
+
+input#newPassword,
+input#currentPassword,
+input#confirmPassword {
+    height: 40px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: none;
+    border: solid 1px #ccc;
+    padding: 0 11px;
+}
+
+input:disabled {
+    cursor: not-allowed;
+    border: solid 1px #eee;
+}
+
+.showPassword span {
+    font-size: 12px;
+    margin-top: 7px !important;
+}
+
+.showPassword input {
+    margin: 10px 0;
+    width: 15px;
+}
+
+.post {
+    display: none;
+    position: static;
+    cursor: pointer;
+}
+
+.show,
+.show1 {
+    display: block;
+}
+
+.icon_rotate {
+    transform: rotate(-180deg);
+}
+
+.info_article img {
+    width: 15%;
+    height: 15%;
+}
+
+.article_content,
+.like_comment,
+.write_comment {
+    background-color: #dde9d566;
+}
+
+    .article_content img {
+        width: 35%;
+    }
+
+.content_container {
+    width: 100%;
+    text-align: justify;
+}
+
+    .content_container h4 {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .content_container p {
+        display: -webkit-box;
+        -webkit-line-clamp: 7;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+.information p {
+    margin-bottom: 7px;
+}
+
+.information span {
+    font-size: 13px;
+}
+
+.right_profile .post {
+    height: 900px;
+    overflow-x: auto;
+    padding: 10px 30px;
+}
+
+.title_sub_article {
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+/* Dashboard */
+.main_content_dashboard {
+    display: flex;
+    margin: 20px 30px;
+    flex-wrap: wrap;
+}
+
+.chart_container {
+    min-height: 500px;
+    max-height: 800px;
+    margin: 20px 30px;
+    padding: 20px 40px;
+}
+
+.card_account,
+.card_semester,
+.card_faculty,
+.card_academic_year,
+.card_category,
+.card_articles {
+    width: 250px;
+    height: 125px;
+    border-radius: 10px;
+    margin: 20px 60px;
+    padding: 20px;
+    display: flex;
+}
+
+    .card_account .content_card,
+    .card_semester .content_card,
+    .card_faculty .content_card,
+    .card_academic_year .content_card,
+    .card_category .content_card,
+    .card_articles .content_card {
+        font-size: 20px;
+        margin-left: 30px;
+    }
+
+        .card_account .content_card p:last-child,
+        .card_semester .content_card p:last-child,
+        .card_faculty .content_card p:last-child,
+        .card_academic_year .content_card p:last-child,
+        .card_category .content_card p:last-child,
+        .card_articles .content_card p:last-child {
+            font-size: 25px;
+            font-weight: 600;
+        }
+
+.card_icon {
+    width: 65px;
+    height: 85px;
+    border-radius: 10px;
+}
+
+    .card_icon i {
+        width: 65px;
+        height: 85px;
+        display: flex;
+        font-size: 30px;
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+    }
+
+.card_account {
+    background-color: #f3e2cb;
+}
+
+    .card_account > .card_icon {
+        background-color: #d5c7b3;
+        color: #675946;
+    }
+
+.card_semester {
+    background-color: #cdc8f0;
+}
+
+    .card_semester > .card_icon {
+        background-color: #8780b28a;
+        color: #202643;
+    }
+
+.card_faculty {
+    background-color: #badff5;
+}
+
+    .card_faculty > .card_icon {
+        background-color: #04235380;
+        color: #042353;
+    }
+
+.card_academic_year {
+    background-color: #ffeded;
+}
+
+    .card_academic_year > .card_icon {
+        background-color: #ff6e9921;
+        color: #ff6e99;
+    }
+
+.card_category {
+    background-color: #fff7ae;
+}
+
+    .card_category > .card_icon {
+        background-color: #f365072b;
+        color: #f36507;
+    }
+
+.card_articles {
+    background-color: #ecc2c380;
+}
+
+    .card_articles > .card_icon {
+        background-color: #f32c234d;
+        color: #1c2032;
+    }
+
+.top_page .sidebar_mobile {
+    display: none;
+}
+
+.menu_sidebar {
+    position: absolute;
+    z-index: 999;
+    background-color: #dde9d5f6;
+    width: 75%;
+    height: 90%;
+    margin-right: 20px;
+    box-shadow: 0 4px 4px 0 #304d44;
+    display: block;
+    top: 7%;
+    padding: 20px;
+}
+
+    .menu_sidebar .hideSidebar {
+        float: right;
+        font-size: 25px;
+    }
+
+    .menu_sidebar ul {
+        margin-top: 30px;
+    }
+
+        .menu_sidebar ul li.active_link {
+            padding: 5px 20px;
+        }
+/* Thay đổi kiểu chữ và cỡ chữ của nội dung */
+#docxContent {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: justify;
+    border-right: 1px solid #000;
+    padding-right: 10px;
+}
+
+.input-group {
+    max-height: calc(100vh - 200px);
+    min-height: 100px;
+}
+
+.note_content {
+    min-height: 400px;
+}
+
+.submenu_filter {
+    position: relative;
+    right: 5%;
+}
+
+    .submenu_filter button {
+        border: none;
+        outline: none;
+        background: none;
+    }
+
+    .submenu-content.active {
+        display: block;
+    }
+
+.submenu-content {
+    position: absolute;
+    width: 210px;
+    top: 70%;
+    right: 0;
+    background-color: #fff;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    animation: slideFromRight 0.3s ease;
+    display: none;
+}
+
+@keyframes slideFromRight {
+    from {
+        right: -100%;
+    }
+
+    to {
+        right: 0;
+    }
+}
+
+.btn_comment {
+    position: relative;
+}
+
+span.comment-count {
+    position: absolute;
+    top: 10%;
+    right: 25%;
+    background-color: orange;
+    color: white;
+    border-radius: 50%;
+    width: 17px;
+    height: 17px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.right_semester {
+    position: relative;
+    top: 5%;
+    left: 10%;
+    width: 50%;
+}
+
+.note_content .content_container {
+    min-height: 390px;
+}
+
+.dateline_1,
+.dateline_2 {
+    width: 100%;
+}

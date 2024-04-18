@@ -1,0 +1,34 @@
+﻿html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+/* Đảm bảo nội dung của modal có kích thước phù hợp và cuộn được nếu cần */
+#docxModal .modal-body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+/* Thay đổi kiểu chữ và cỡ chữ của nội dung */
+#docxContent {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+}
