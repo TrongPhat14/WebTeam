@@ -347,8 +347,8 @@ namespace WebTeam.Controllers
             }
 
 
-            ViewData["AcademicYearID"] = new SelectList(_context.AcademicYears, "AcademicYears", "AcademicYears", semester.AcademicYear);
-            ViewData["FacultyID"] = new SelectList(_context.Faculties, "FacultyName", "FacultyName", semester.Faculty);
+            ViewData["AcademicYearID"] = new SelectList(_context.AcademicYears, "AcademicYearID", "AcademicYears", semester.AcademicYear);
+            ViewData["FacultyID"] = new SelectList(_context.Faculties, "FacultyId", "FacultyName", semester.Faculty);
             return View(semester);
         }
 
