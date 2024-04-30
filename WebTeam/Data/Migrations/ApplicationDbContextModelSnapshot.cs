@@ -277,8 +277,14 @@ namespace WebTeam.Data.Migrations
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("FacultyId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsCheckMes")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("Isbool")
                         .HasColumnType("bit");
@@ -294,6 +300,9 @@ namespace WebTeam.Data.Migrations
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("boolIs")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("submissionDate")
                         .HasColumnType("datetime2");
@@ -393,6 +402,9 @@ namespace WebTeam.Data.Migrations
 
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsCheckMes")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Marketing_coordinatorID")
                         .HasColumnType("nvarchar(450)");

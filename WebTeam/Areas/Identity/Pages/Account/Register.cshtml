@@ -4,65 +4,6 @@
     ViewData["Title"] = "Register";
     Layout = null;
 }
-@*
-<h1>@ViewData["Title"]</h1>
-
-<div class="row">
-    <div class="col-md-4">
-        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <h2>Create a new account.</h2>
-            <hr />
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Name" class="form-control" aria-required="true" placeholder="Name" />
-                <label asp-for="Input.Name">Name</label>
-                <span asp-validation-for="Input.Name" class="text-danger"></span>
-            </div>
-
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" aria-required="true" placeholder="name@example.com" />
-                <label asp-for="Input.Email">Email</label>
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Password" class="form-control" aria-required="true" placeholder="password" />
-                <label asp-for="Input.Password">Password</label>
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.ConfirmPassword" class="form-control" aria-required="true" placeholder="password" />
-                <label asp-for="Input.ConfirmPassword">Confirm Password</label>
-                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Input.SelectedFaculties" class="control-label"></label>
-                <select asp-for="Input.SelectedFaculties" class="form-control" multiple>
-                    @foreach (var faculty in ViewData["Faculties"] as List<Faculty>)
-                    {
-                        <option value="@faculty.FacultyId">@faculty.FacultyName</option>
-                    }
-                </select>
-                <span asp-validation-for="Input.SelectedFaculties" class="text-danger"></span>
-            </div>
-            <div>
-                <div class="form-check">
-                    <input type="radio" class="form-check-input" id="studentCheckbox" name="Input.Roles" value="Student">
-                    <label class="form-check-label" for="studentCheckbox">Student</label>
-                </div>
-                <div class="form-check">
-                    <input type="radio" class="form-check-input" id="marketingCoordinatorCheckbox" name="Input.Roles" value="Marketing_Coordinator">
-                    <label class="form-check-label" for="marketingCoordinatorCheckbox">Marketing Coordinator</label>
-                </div>
-            </div>
-            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
-        </form>
-    </div>
-</div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}*@
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,21 +37,26 @@
     <title>Magazine of University</title>
 </head>
 <body>
-    <section class="allsubmission">
+    <section class="setdeadline">
         <header>
             <section class="header_logo container">
                 <div class="left">
-                    <a class="home_icon" href="../index.html">
+                    <a class="home_icon" asp-controller="Home" asp-action="">
                         <i class="fa-solid fa-house"></i>
                     </a>
                     <div class="container_search">
                         <div class="icon_search">
                             <i class="search fa-solid fa-magnifying-glass"></i>
                         </div>
-                        <div class="input_search">
-                            <input type="text" placeholder="search" id="search" />
-                            <i class="clear fa fa-times"></i>
-                        </div>
+                        <form asp-controller="" asp-action="Search">
+                            <div class="input_search">
+
+                                <input type="text" name="Search"
+                                       placeholder="search">
+                                <i class="clear fa fa-times"></i>
+
+                            </div>
+                        </form>
                     </div>
                     <a class="search_mobile" href="../search.html">
                         <i class="fa-solid fa-magnifying-glass"></i>
@@ -120,52 +66,44 @@
                     </a>
                 </div>
                 <div class="brand_name">
-                    <a href="../index.html">Magazine of University</a>
+                    <a asp-controller="Home" asp-action="">Magazine of University</a>
                 </div>
                 <div class="right">
-                    <button><i class="fa-solid fa-bell"></i></button>
-                    <div class="dropdown">
-                        <a class="btn dropdown_icon dropdown-toggle"
-                           href="#"
-                           role="button"
-                           id="dropdownMenuLink"
-                           data-bs-toggle="dropdown"
-                           aria-expanded="false">
-                            <i class="fa-solid fa-user"></i>
-                        </a>
-                    </div>
+                    <span class="ms-2 fs-6 fw-bold text-uppercase text-center">@User.Identity?.Name</span>
                 </div>
             </section>
         </header>
+
         <section class="main_content">
             <div class="left_category">
                 <ul>
                     <li>
-                        <a href="dashboard.html">Dashboard</a>
+                        <a asp-controller="Admin" asp-action="">Dashboard</a>
                     </li>
                     <li>
-                        <a href="academicYear.html">Academic Year</a>
+                        <a asp-controller="Admin" asp-action="AcademicYears">Academic Year</a>
                     </li>
                     <li>
-                        <a href="semester.html">Semester</a>
+                        <a asp-controller="Admin" asp-action="Semesters">Semester</a>
                     </li>
                     <li>
-                        <a href="faculty.html">Faculty</a>
+                        <a asp-controller="Admin" asp-action="Faculties">Faculty</a>
                     </li>
                     <li class="active_link">
-                        <a href="account.html">Accounts</a>
+                        <a asp-controller="Admin" asp-action="Users">Accounts</a>
                     </li>
                     <li>
-                        <a href="categories.html">Categories</a>
+                        <a asp-controller="Admin" asp-action="Categories">Categories</a>
                     </li>
                     <li>
-                        <a href="profile.html">Profile</a>
+                        <a asp-controller="Admin" asp-action="Profile">Profile</a>
                     </li>
-                    <li>
-                        <a href="#">
-                            Log out
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                        </a>
+                    <li class="log_out">
+                        <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+                            <button type="submit" class="btn btn-outline-success btn-lg me-3 ms-3 log_out">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                            </button>
+                        </form>
                     </li>
                 </ul>
             </div>
@@ -180,31 +118,25 @@
                         </a>
                         <ul>
                             <li>
-                                <a href="dashboard.html">Dashboard</a>
+                                <a asp-controller="Admin" asp-action="">Dashboard</a>
                             </li>
                             <li>
-                                <a href="academicYear.html">Academic Year</a>
+                                <a asp-controller="Admin" asp-action="AcademicYears">Academic Year</a>
                             </li>
                             <li>
-                                <a href="semester.html">Semester</a>
+                                <a asp-controller="Admin" asp-action="Semesters">Semester</a>
                             </li>
                             <li>
-                                <a href="faculty.html">Faculty</a>
+                                <a asp-controller="Admin" asp-action="Faculties">Faculty</a>
                             </li>
                             <li class="active_link">
-                                <a href="account.html">Accounts</a>
+                                <a asp-controller="Admin" asp-action="Users">Accounts</a>
                             </li>
                             <li>
-                                <a href="categories.html">Categories</a>
+                                <a asp-controller="Admin" asp-action="Categories">Categories</a>
                             </li>
                             <li>
-                                <a href="profile.html">Profile</a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    Log out
-                                    <i class="fa-solid fa-right-from-bracket"></i>
-                                </a>
+                                <a asp-controller="Admin" asp-action="Profile">Profile</a>
                             </li>
                         </ul>
                     </div>
@@ -212,9 +144,11 @@
                 <nav class="subnavigate">
                     <ul>
                         <li>
-                            <a href="account.html">List User</a>
+                            <a asp-controller="Admin"  asp-action="Users">Manage User</a>
                         </li>
-                        <li class="active"><a href="createAccount.html">Create new</a></li>
+                        <li class="active">
+                            <a asp-area="Identity" asp-page="/Account/Register">Create New</a>
+                        </li>
                     </ul>
                 </nav>
 
@@ -245,57 +179,47 @@
                                                class="form-control border border-white"
                                                placeholder="Email"
                                                aria-describedby="addon-wrapping">
-                                        <span asp-validation-for="Input.Email" class="text-danger"></span>
                                     </div>
-                                </p>
-                            </div>
-                            <div class="author_article ps-4">
-                                <p class="d-block p-2 fs-5 text fw-bold">
-                                    Password:<br>
-                                    <div class="status bg-white p-3 mb-2 rounded d-flex">
-                                        <input class="border border-white w-100 p-2" asp-for="Input.Password" id="myInput" aria-required="true">
-                                        <span asp-validation-for="Input.Password" class="text-danger"></span>
-                                    </div>
-                                </p>
-                            </div>
-                            <div class="author_article ps-4">
-                                <p class="d-block p-2 fs-5 text fw-bold">
-                                    ConfirmPassword:<br>
-                                    <div class="status bg-white p-3 mb-2 rounded d-flex">
-                                        <input asp-for="Input.ConfirmPassword" class="border border-white w-100 p-2" aria-required="true"  id="myInput">
-                                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-                                    </div>
+                                    <span asp-validation-for="Input.Email" class="text-danger"></span>
 
+                                </p>
+                            </div>
+
+                            <div class="status_publish ps-4">
+                                <p class="d-block p-2 fs-5 text fw-bold">
+                                    Role: <br>
+                                    <div class="form-check">
+                                        <input type="radio" class="form-check-input" id="studentCheckbox" name="Input.Roles" value="Student">
+                                        <label class="form-check-label" for="studentCheckbox">Student</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="radio" class="form-check-input" id="marketingCoordinatorCheckbox" name="Input.Roles" value="Marketing_Coordinator">
+                                        <label class="form-check-label" for="marketingCoordinatorCheckbox">Marketing Coordinator</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="radio" class="form-check-input" id="marketingManagerCheckbox" name="Input.Roles" value="Marketing_manager">
+                                        <label class="form-check-label" for="marketingManagerCheckbox">Marketing Manager</label>
+                                    </div>
                                 </p>
                             </div>
                             <div class="status_publish ps-4">
                                 <p class="d-block p-2 fs-5 text fw-bold">
-                                    Role: <br>
+                                    Faculty Name: <br>
                                     <div class="status bg-white p-3 mb-2 rounded">
-                                        <select asp-for="Input.SelectedFaculties" class="form-select border border-white" multiple id="floatingSelect" aria-label="Floating label select example">
-                                            @foreach (var faculty in ViewData["Faculties"] as List<Faculty>)
-                                            {
-                                                <option value="@faculty.FacultyId">@faculty.FacultyName</option>
-                                            }
-                                        </select>
-                                        <span asp-validation-for="Input.SelectedFaculties" class="text-danger"></span>
+                                        <select asp-for="Input.SelectedFaculties" id="facultySelect" class="form-control" asp-items="ViewBag.FacultyId"></select>
                                     </div>
+                                    <span asp-validation-for="Input.SelectedFaculties" class="text-danger"></span>
                                 </p>
-                            </div>
-                            <div>
-                                <div class="form-check">
-                                    <input type="radio" class="form-check-input" id="studentCheckbox" name="Input.Roles" value="Student">
-                                    <label class="form-check-label" for="studentCheckbox">Student</label>
-                                </div>
-                                <div class="form-check">
-                                    <input type="radio" class="form-check-input" id="marketingCoordinatorCheckbox" name="Input.Roles" value="Marketing_Coordinator">
-                                    <label class="form-check-label" for="marketingCoordinatorCheckbox">Marketing Coordinator</label>
-                                </div>
                             </div>
                             <div class="btn_group ps-4 mt-5">
                                 <button type="submit" class="btn btn-outline-success btn-lg me-3">
                                     <i class="fa-regular fa-floppy-disk"></i> Save
                                 </button>
+                                <a asp-controller="Admin" asp-action="Users"
+                                   type="button"
+                                   class="btn btn-outline-secondary btn-lg">
+                                    <i class="fa-solid fa-arrow-left"></i> Back to Created
+                                </a>
                             </div>
                         </form>
                         
@@ -414,5 +338,48 @@
             }
         }
     </script>
+ <script>
+    // Hàm JavaScript để tạo mật khẩu ngẫu nhiên và cập nhật giá trị của input hidden khi trang được tải
+    document.addEventListener("DOMContentLoaded", function() {
+        generateRandomPassword();
+    });
+
+    // Hàm JavaScript để tạo mật khẩu ngẫu nhiên và cập nhật giá trị của input hidden
+    function generateRandomPassword() {
+        var length = 10; // Độ dài mật khẩu, bạn có thể thay đổi nếu cần
+        var charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!#$%^&*()_-+=<>?";
+        var password = "";
+        for (var i = 0; i < length; i++) {
+            password += charset.charAt(Math.floor(Math.random() * charset.length));
+        }
+        // Cập nhật giá trị của input hidden
+        document.getElementById("randomPassword").value = password;
+        // Cập nhật giá trị của input text để hiển thị mật khẩu
+        document.getElementById("myInput").value = password;
+    }
+</script>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Lắng nghe sự kiện khi người dùng chọn vai trò
+                document.querySelectorAll('input[type=radio][name="Input.Roles"]').forEach(function (radio) {
+                    radio.addEventListener('change', function () {
+                        // Nếu vai trò là Marketing Manager
+                        if (this.value === "Marketing_manager") {
+                            // Làm cho trường select trở thành mờ và không tương tác được
+                            document.getElementById("facultySelect").disabled = true;
+                        } else {
+                            // Ngược lại, loại bỏ thuộc tính disabled
+                            document.getElementById("facultySelect").disabled = false;
+                        }
+                    });
+                });
+            });
+    </script>
+
+
+
+
 </body>
 </html>

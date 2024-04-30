@@ -2,32 +2,280 @@
 
 @{
     ViewData["Title"] = "Delete";
+    Layout = null;
 }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon"
+          type="image/png"
+          href="~/asset/img/taskbar.jpg" />
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet" />
+    <!-- Fontawesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+          integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer" />
+    <!-- Boostrap 5.3.2 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+          crossorigin="anonymous" />
+    <!-- link css -->
+    <link rel="stylesheet" href="~/asset/css/main.css" />
+    <link rel="stylesheet" href="~/asset/css/main1.css" />
+    <link rel="stylesheet" href="~/asset/css/submission.css" />
+    <!-- Responsive -->
+    <link rel="stylesheet" href="~/asset/css/responsive.css" />
+    <title>Magazine of University</title>
+</head>
+<body>
+    <section class="allsubmission">
+        <header>
+            <section class="header_logo container">
+                <div class="left">
+                    <a class="home_icon" asp-controller="Home" asp-action="">
+                        <i class="fa-solid fa-house"></i>
+                    </a>
+                    <div class="container_search">
+                        <div class="icon_search">
+                            <i class="search fa-solid fa-magnifying-glass"></i>
+                        </div>
+                        <form asp-controller="" asp-action="Search">
+                            <div class="input_search">
 
-<h1>Delete</h1>
+                                <input type="text" name="Search"
+                                       placeholder="search">
+                                <i class="clear fa fa-times"></i>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Category</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CategoryName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CategoryName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Faculty)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Faculty.FacultyId)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="CategoryId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
-</div>
+                            </div>
+                        </form>
+                    </div>
+                    <a class="search_mobile" href="../search.html">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </a>
+                    <a class="category_mobile" href="../category.html">
+                        <i class="fa-solid fa-icons"></i>
+                    </a>
+                </div>
+                <div class="brand_name">
+                    <a asp-controller="Home" asp-action="">Magazine of University</a>
+                </div>
+                <div class="right">
+                    <span class="ms-2 fs-6 fw-bold text-uppercase text-center">@User.Identity?.Name</span>
+                </div>
+            </section>
+        </header>
+
+        <section class="main_content">
+            <div class="left_category">
+                <ul>
+                    <li>
+                        <a asp-area="" asp-action="AcademicYears">Academic Year</a>
+                    </li>
+                    <li>
+                        <a asp-area="" asp-action="Semesters">Semester</a>
+                    </li>
+                    <li>
+                        <a asp-area="" asp-action="Faculties">Faculty</a>
+                    </li>
+                    <li>
+                        <a asp-area="" asp-action="Users">Accounts</a>
+                    </li>
+                    <li class="active_link">
+                        <a asp-area="" asp-action="Categories">Categories</a>
+                    </li>
+                    <li>
+                        <a asp-area="Identity" asp-page="/Account/Manage/Profile">Profile</a>
+                    </li>
+                    <li class="log_out">
+                        <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+                            <button type="submit" class="btn btn-outline-success btn-lg me-3 ms-3 log_out">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+            <div class="right_category">
+                <div class="top_page">
+                    <p>HOME</p>
+                    <span></span>
+                    <p>Delete Category</p>
+                    @if (TempData["DeleteSuccessMessage"] != null)
+                    {
+                        <div id="successAlert" class="alert alert-success" role="alert">
+                            @TempData["DeleteSuccessMessage"]
+                        </div>
+                    }
+                </div>
+                <div class="edit_semester">
+                    <div class="main_information">
+                        <h3>Delete Category</h3>
+                        <div class="author_article ps-4">
+                            <p class="d-block p-2 fs-5 text fw-bold">
+                                Category Name:<br>
+                                <div class="author_name bg-white p-3 mb-2 rounded">
+                                    @Html.DisplayFor(model => model.CategoryName)
+                                </div>
+                            </p>
+                        </div>
+                        <div class="status_publish ps-4">
+                            <p class="d-block p-2 fs-5 text fw-bold">
+                                Faculty Name: <br>
+                                <div class="status bg-white p-3 mb-2 rounded">
+                                    @Html.DisplayFor(model => model.Faculty.FacultyName)
+                                </div>
+                            </p>
+                        </div>
+                        <div class="btn_group ps-4 mt-5 d-flex">
+                            <form asp-action="CategoryDelete">
+                                <input type="hidden" asp-for="CategoryId" />
+                                <button type="button" class="btn btn-outline-danger btn-lg me-3" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">Delete</button>
+                                <!-- Modal -->
+                                <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Confirmation</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete this category?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                                                <form id="deleteForm" asp-action="FacultyDelete">
+                                                    <input type="hidden" asp-for="CategoryId" />
+                                                    <button type="submit" class="btn btn-danger">Yes</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <a asp-action="Categories" type="button"
+                               class="btn btn-outline-secondary btn-lg">
+                                Back to List
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </section>
+    <!-- Footer -->
+    <footer>
+        <div class="widget_container">
+            <div class="widget_brand">
+                <div class="animated_brand">
+                    <div class="word">M</div>
+                    <div class="word">A</div>
+                    <div class="word">G</div>
+                    <div class="word">A</div>
+                    <div class="word">Z</div>
+                    <div class="word">I</div>
+                    <div class="word">N</div>
+                    <div class="word">E</div>
+                    <div class="blank"></div>
+                    <div class="word">o</div>
+                    <div class="word">f</div>
+                    <div class="blank"></div>
+                    <div class="word">U</div>
+                    <div class="word">N</div>
+                    <div class="word">I</div>
+                    <div class="word">V</div>
+                    <div class="word">E</div>
+                    <div class="word">R</div>
+                    <div class="word">S</div>
+                    <div class="word">I</div>
+                    <div class="word">T</div>
+                    <div class="word">Y</div>
+                </div>
+                <!-- <p>Facilis ipsum reprehenderit nemo molestias. Aut cum mollitia reprehenderit. Eos cumque dicta adipisci architecto culpa amet.</p> -->
+            </div>
+        </div>
+        <div class="list_footer">
+            <ul>
+                <li class="title_list"><a href="#">Information Technology</a></li>
+                <li><a href="#">Computer Science</a></li>
+                <li><a href="#">Information Technology</a></li>
+                <li><a href="#">Computer Engineering</a></li>
+                <li><a href="#">Network Technology</a></li>
+                <li><a href="#">Software Engineering</a></li>
+                <li><a href="#">Management Information Systems</a></li>
+                <li><a href="#">Big Data & Machine Learning</a></li>
+                <li><a href="#">Data Communication and Computer Network</a></li>
+            </ul>
+            <ul>
+                <li class="title_list"><a href="#">Business administrator</a></li>
+                <li><a href="#">Digital Marketing</a></li>
+                <li><a href="#">International business</a></li>
+                <li><a href="#">Hotel Management</a></li>
+                <li><a href="#">Management of tourism and travel services</a></li>
+                <li><a href="#">Multimedia management</a></li>
+                <li><a href="#">Finance</a></li>
+            </ul>
+            <ul>
+                <li class="title_list"><a href="#">Graphic & digital design</a></li>
+                <li><a href="#">Brand identity design</a></li>
+                <li><a href="#">Marketing advertising design</a></li>
+                <li><a href="#">Design UI/UX interface</a></li>
+                <li><a href="#">Design publications and magazines</a></li>
+                <li><a href="#">Motion graphic design - motion graphics</a></li>
+                <li><a href="#">Art illustration design - illustration design</a></li>
+                <li><a href="#">Big Data & Machine Learning</a></li>
+                <li><a href="#">Data Communication and Computer Network</a></li>
+            </ul>
+        </div>
+        <div class="contact_footer">
+            <div class="address">
+                <i class="fa-solid fa-location-dot"></i>
+                <p>
+                    Cong Hoa Garden Building, No. 20 Cong Hoa, Ward 12, Tan Binh
+                    District, Ho Chi Minh City
+                </p>
+            </div>
+            <div class="email">
+                <i class="fa-solid fa-envelope"></i>
+                <p>phatnhtgcs210259@fpt.edu.vn</p>
+            </div>
+        </div>
+        <small class="block">Copyright &copy; 2024 Enterprise Web Software Development</small>
+    </footer>
+    <!-- Go to top -->
+    <a href="#" class="js-gotop"><i class="fa-solid fa-chevron-up"></i></a>
+
+    <!-- Script link -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+    <!-- Main -->
+    <script src="~/asset/js/main.js"></script>
+    <script src="~/asset/js/more.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="confirmation"]').click(function () {
+                var id = $(this).data('id');
+                $('#confirmDelete').attr('data-id', id);
+                $('#deleteConfirmationModal').modal('show');
+            });
+
+            $('#confirmDelete').click(function () {
+                var id = $(this).data('id');
+                $('#deleteForm').attr('action', '/ControllerName/CategoryDelete?id=' + id);
+                $('#deleteForm').submit();
+            });
+        });
+    </script>
+</body>
+</html>

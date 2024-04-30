@@ -10,13 +10,19 @@ using Microsoft.AspNetCore.Authorization;
 using X.PagedList;
 using Microsoft.AspNetCore.Identity;
 using WebTeam.Data.Migrations;
+using System.Globalization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Globalization;
+using System.Security.Claims;
+using DocumentFormat.OpenXml.Spreadsheet;
+using WebTeam.Models;
 
 namespace WebTeam.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
-        
+
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
@@ -25,25 +31,7 @@ namespace WebTeam.Controllers
             _context = context;
             _userManager = userManager;
         }
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-
         ////////////////////////////// Faculties Controller ///////////////////////////////////
-/*        public async Task<IActionResult> Faculties()
-        {
-            if (_context.Faculties != null)
-            {
-                var faculties = await _context.Faculties.ToListAsync();
-                return View("~/Views/Admin/Faculties/Index.cshtml", faculties);
-            }
-            else
-            {
-                return Problem("Entity set 'ApplicationDbContext.Faculties' is null.");
-            }
-        }*/
         public async Task<IActionResult> Faculties(int? page)
         {
             int pageNumber = page ?? 1;
@@ -51,6 +39,7 @@ namespace WebTeam.Controllers
             if (_context != null && _context.Faculties != null)
             {
                 var faculties = await _context.Faculties
+                .OrderByDescending(a => a.FacultyId)
                                                .ToPagedListAsync(pageNumber, pageSize);
 
                 return View("~/Views/Admin/Faculties/Index.cshtml", faculties);
@@ -61,6 +50,34 @@ namespace WebTeam.Controllers
                 return View(new List<Faculty>());
             }
         }
+        public async Task<IActionResult> SearchFaculty(string searchString, int? page, string orderBy)
+        {
+            ViewBag.SearchString = searchString;
+
+            var faculties = _context.Faculties.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                faculties = faculties.Where(f => f.FacultyName.Contains(searchString));
+            }
+            switch (orderBy)
+            {
+                case "fac_desc":
+                    faculties = faculties.OrderByDescending(a => a.FacultyName);
+                    break;
+
+                default:
+                    faculties = faculties.OrderBy(a => a.FacultyName);
+                    break;
+            }
+
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
+            var searchResult = await faculties.ToPagedListAsync(pageNumber, pageSize);
+
+            return View("~/Views/Admin/Faculties/Index.cshtml", searchResult);
+        }
+
         // GET: Faculties/Details/5
         public async Task<IActionResult> FacultyDetails(int? id)
         {
@@ -96,10 +113,16 @@ namespace WebTeam.Controllers
             {
                 _context.Add(faculty);
                 await _context.SaveChangesAsync();
+
+                // Đặt thông báo vào TempData
+                TempData["SuccessMessage"] = "Faculty has been added successfully.";
+
                 return RedirectToAction(nameof(Faculties));
             }
             return View(faculty);
         }
+
+
 
         // GET: Faculties/Edit/5
         public async Task<IActionResult> FacultyEdit(int? id)
@@ -135,6 +158,8 @@ namespace WebTeam.Controllers
                 {
                     _context.Update(faculty);
                     await _context.SaveChangesAsync();
+
+                    TempData["UpdateSuccessMessage"] = "Faculty has been edited successfully!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -175,19 +200,41 @@ namespace WebTeam.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> FacultyDeleteConfirmed(int id)
         {
-            if (_context.Faculties == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Faculties'  is null.");
-            }
             var faculty = await _context.Faculties.FindAsync(id);
-            if (faculty != null)
+            if (faculty == null)
             {
-                _context.Faculties.Remove(faculty);
+                return NotFound();
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Faculties));
+            var semester = _context.Semesters.Where(c => c.FacultyID == id);
+
+            var user = _context.Users.Where(c => c.FacultyId == id);
+
+            var categories = _context.Categories.Where(l => l.FacultyId == id);
+
+            var article = _context.Articles.Where(l => l.FacultyId == id);
+
+
+            if (faculty != null  && !user.Any()  && !article.Any())
+            {
+                _context.Semesters.RemoveRange(semester);
+                _context.Categories.RemoveRange(categories);
+                _context.Faculties.Remove(faculty);
+                await _context.SaveChangesAsync();
+                TempData["DeleteSuccessMessage"] = "Faculty has been deleted successfully!";
+                return RedirectToAction(nameof(Faculties));
+            }
+            else if(faculty != null && !user.Any())
+            {
+                TempData["DeleteMessage"] = "Faculty cannot be deleted! Because it is having articles of use!";
+            }
+            else if(faculty != null && !article.Any())
+            {
+                TempData["DeleteMessage"] = "Faculty cannot be deleted! Because there are users using it!";
+            }
+            return RedirectToAction(nameof(FacultyDelete));
         }
+
 
         private bool FacultyExists(int id)
         {
@@ -196,11 +243,6 @@ namespace WebTeam.Controllers
 
 
         ////////////////////////////// Semester Controller ///////////////////////////////////
-/*        public async Task<IActionResult> Semesters()
-        {
-            var applicationDbContext = _context.Semesters.Include(s => s.AcademicYear).Include(s => s.Faculty);
-            return View("~/Views/Admin/Semesters/Index.cshtml", await applicationDbContext.ToListAsync());
-        }*/
         public async Task<IActionResult> Semesters(int? page)
         {
             int pageNumber = page ?? 1;
@@ -209,6 +251,7 @@ namespace WebTeam.Controllers
             {
                 var semesters = await _context.Semesters
                     .Include(s => s.AcademicYear).Include(s => s.Faculty)
+                .OrderByDescending(a => a.SemesterID)
                                                .ToPagedListAsync(pageNumber, pageSize);
 
                 return View("~/Views/Admin/Semesters/Index.cshtml", semesters);
@@ -219,6 +262,34 @@ namespace WebTeam.Controllers
                 return View(new List<Semester>());
             }
         }
+        public async Task<IActionResult> SearchSemester(string searchString, int? page, string orderBy)
+        {
+            ViewBag.SearchString = searchString;
+
+            var semesters = _context.Semesters.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                semesters = semesters.Where(f => f.SemesterName.Contains(searchString));
+            }
+            switch (orderBy)
+            {
+                case "sem_desc":
+                    semesters = semesters.OrderByDescending(a => a.SemesterName);
+                    break;
+
+                default:
+                    semesters = semesters.OrderBy(a => a.SemesterName);
+                    break;
+            }
+
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
+            var searchResult = await semesters.ToPagedListAsync(pageNumber, pageSize);
+
+            return View("~/Views/Admin/Semesters/Index.cshtml", searchResult);
+        }
+
         // GET: Semesters/Details/5
         public async Task<IActionResult> SemesterDetails(int? id)
         {
@@ -242,8 +313,8 @@ namespace WebTeam.Controllers
         // GET: Semesters/Create
         public IActionResult SemesterCreate()
         {
-            ViewData["AcademicYearID"] = new SelectList(_context.AcademicYears, "AcademicYearID", "AcademicYearID");
-            ViewData["FacultyID"] = new SelectList(_context.Faculties, "FacultyId", "FacultyId");
+            ViewData["AcademicYearID"] = new SelectList(_context.AcademicYears, "AcademicYearID", "AcademicYears");
+            ViewData["FacultyID"] = new SelectList(_context.Faculties, "FacultyId", "FacultyName");
             return View("~/Views/Admin/Semesters/Create.cshtml");
         }
 
@@ -254,48 +325,33 @@ namespace WebTeam.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SemesterCreate([Bind("SemesterID,SemesterName,Notification,CreatedDate,ClosureDate,Dl1,DL2,FacultyID,AcademicYearID")] Semester semester)
         {
-/*            if (semester.CreatedDate.HasValue) // Kiểm tra xem CreatedDate có giá trị không
-            {
-                var createdDate = semester.CreatedDate.Value; // Trích xuất ngày thực sự từ CreatedDate
-
-                var year = createdDate.Year; // Trích xuất năm từ CreatedDate
-
-                // Tìm AcademicYearID phù hợp với năm
-                var academicYear = await _context.AcademicYears.FirstOrDefaultAsync(a => a.StartDate <= year && a.ClosureDate >= year);
-
-                if (academicYear != null)
-                {
-                    // Gán AcademicYearID tìm được vào đối tượng semester
-                    semester.AcademicYearID = academicYear.AcademicYearID;
-
-                    // Thêm semester vào context và lưu thay đổi
-                    _context.Add(semester);
-                    await _context.SaveChangesAsync();
-
-                    // Redirect đến action Semesters
-                    return RedirectToAction(nameof(Semesters));
-                }
-                else
-                {
-                    // Trường hợp không tìm thấy AcademicYear phù hợp
-                    ModelState.AddModelError(string.Empty, "Không tìm thấy AcademicYear phù hợp.");
-                }
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "Ngày tạo không hợp lệ.");
-            }*/
             if (ModelState.IsValid)
             {
+                // Kiểm tra xem CloseDate và DL2 có nhỏ hơn CreateDate và Dl1 không
+                if (semester.ClosureDate < semester.CreatedDate)
+                {
+                    // Nếu CloseDate nhỏ hơn CreateDate, đặt thông báo lỗi vào TempData
+                    TempData["ErrorMessage"] = "Closure Date must be greater than Create Date.";
+                    return RedirectToAction(nameof(SemesterCreate));
+                }
+                else if (semester.DL2 < semester.Dl1)
+                {
+                    // Nếu DL2 nhỏ hơn Dl1, đặt thông báo lỗi vào TempData
+                    TempData["ErrorMessage"] = "Deadline 2 must be greater than Deadline 1.";
+                    return RedirectToAction(nameof(SemesterCreate));
+                }
+
                 _context.Add(semester);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Semesters));
             }
 
-            ViewData["AcademicYearID"] = new SelectList(_context.AcademicYears, "AcademicYearID", "AcademicYearID", semester.AcademicYearID);
-            ViewData["FacultyID"] = new SelectList(_context.Faculties, "FacultyId", "FacultyId", semester.FacultyID);
+
+            ViewData["AcademicYearID"] = new SelectList(_context.AcademicYears, "AcademicYears", "AcademicYears", semester.AcademicYear);
+            ViewData["FacultyID"] = new SelectList(_context.Faculties, "FacultyName", "FacultyName", semester.Faculty);
             return View(semester);
         }
+
 
         // GET: Semesters/Edit/5
         public async Task<IActionResult> SemesterEdit(int? id)
@@ -310,8 +366,8 @@ namespace WebTeam.Controllers
             {
                 return NotFound();
             }
-            ViewData["AcademicYearID"] = new SelectList(_context.AcademicYears, "AcademicYearID", "AcademicYearID", semester.AcademicYearID);
-            ViewData["FacultyID"] = new SelectList(_context.Faculties, "FacultyId", "FacultyId", semester.FacultyID);
+            ViewData["AcademicYearID"] = new SelectList(_context.AcademicYears, "AcademicYearID", "AcademicYears", semester.AcademicYearID);
+            ViewData["FacultyID"] = new SelectList(_context.Faculties, "FacultyId", "FacultyName", semester.FacultyID);
             return View("~/Views/Admin/Semesters/Edit.cshtml", semester);
         }
 
@@ -333,6 +389,8 @@ namespace WebTeam.Controllers
                 {
                     _context.Update(semester);
                     await _context.SaveChangesAsync();
+
+                    TempData["SuccessMessage"] = "Semester has been edited successfully!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -351,6 +409,7 @@ namespace WebTeam.Controllers
             ViewData["FacultyID"] = new SelectList(_context.Faculties, "FacultyId", "FacultyId", semester.FacultyID);
             return View(semester);
         }
+
 
         // GET: Semesters/Delete/5
         public async Task<IActionResult> SemesterDelete(int? id)
@@ -377,19 +436,30 @@ namespace WebTeam.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SemesterDeleteConfirmed(int id)
         {
-            if (_context.Semesters == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Semesters'  is null.");
-            }
             var semester = await _context.Semesters.FindAsync(id);
-            if (semester != null)
+            if (semester == null)
+            {
+                return NotFound();
+            }
+            var article = _context.Articles.Where(c => c.SemesterId == id);
+
+            if (semester != null && !article.Any())
             {
                 _context.Semesters.Remove(semester);
+                TempData["DeleteSuccessMessage"] = "Semester has been deleted successfully!";
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Semesters));
+            }
+            else
+            {
+                TempData["DeleteSuccessMessage"] = "Error";
+
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Semesters));
+            return RedirectToAction(nameof(SemesterDelete));
+
         }
+
 
         private bool SemesterExists(int id)
         {
@@ -405,6 +475,8 @@ namespace WebTeam.Controllers
             {
                 var categories = await _context.Categories
                                                .Include(c => c.Faculty)
+                                               .OrderByDescending(a => a.CategoryId)
+
                                                .ToPagedListAsync(pageNumber, pageSize);
 
                 return View("~/Views/Admin/Categories/Index.cshtml", categories);
@@ -415,6 +487,35 @@ namespace WebTeam.Controllers
                 return View(new List<Category>());
             }
         }
+        public async Task<IActionResult> SearchCategory(string searchString, int? page, string orderBy)
+        {
+            ViewBag.SearchString = searchString;
+
+            IQueryable<Category> categories = _context.Categories.Include(c => c.Faculty);
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                categories = categories.Where(c => c.CategoryName.Contains(searchString));
+            }
+
+            switch (orderBy)
+            {
+                case "category_desc":
+                    categories = categories.OrderByDescending(a => a.CategoryName);
+                    break;
+
+                default:
+                    categories = categories.OrderBy(a => a.CategoryName);
+                    break;
+            }
+
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+            var searchResult = await categories.ToPagedListAsync(pageNumber, pageSize);
+
+            return View("~/Views/Admin/Categories/Index.cshtml", searchResult);
+        }
+
 
         // GET: Categories/Details/5
         public async Task<IActionResult> CategoryDetails(int? id)
@@ -438,7 +539,7 @@ namespace WebTeam.Controllers
         // GET: Categories/Create
         public IActionResult CategoryCreate()
         {
-            ViewData["FacultyId"] = new SelectList(_context.Faculties, "FacultyId", "FacultyId");
+            ViewData["FacultyId"] = new SelectList(_context.Faculties, "FacultyId", "FacultyName");
             return View("~/Views/Admin/Categories/Create.cshtml");
         }
 
@@ -453,11 +554,17 @@ namespace WebTeam.Controllers
             {
                 _context.Add(category);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Categories));
+
+                TempData["SuccessMessage"] = "A Category has been created successfully!";
+
+                return RedirectToAction(nameof(Categories)); // Chuyển hướng người dùng về trang Categories
             }
+
             ViewData["FacultyId"] = new SelectList(_context.Faculties, "FacultyId", "FacultyId", category.FacultyId);
+
             return View(category);
         }
+
 
         // GET: Categories/Edit/5
         public async Task<IActionResult> CategoryEdit(int? id)
@@ -472,7 +579,7 @@ namespace WebTeam.Controllers
             {
                 return NotFound();
             }
-            ViewData["FacultyId"] = new SelectList(_context.Faculties, "FacultyId", "FacultyId", category.FacultyId);
+            ViewData["FacultyId"] = new SelectList(_context.Faculties, "FacultyId", "FacultyName", category.FacultyId);
             return View("~/Views/Admin/Categories/Edit.cshtml", category);
         }
 
@@ -494,6 +601,9 @@ namespace WebTeam.Controllers
                 {
                     _context.Update(category);
                     await _context.SaveChangesAsync();
+
+                    // Thêm thông báo thành công vào TempData
+                    TempData["SuccessMessage"] = "Category has been edited successfully!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -506,11 +616,14 @@ namespace WebTeam.Controllers
                         throw;
                     }
                 }
+                // Chuyển hướng về trang index của category
                 return RedirectToAction(nameof(Categories));
             }
             ViewData["FacultyId"] = new SelectList(_context.Faculties, "FacultyId", "FacultyId", category.FacultyId);
             return View(category);
         }
+
+
 
         // GET: Categories/Delete/5
         public async Task<IActionResult> CategoryDelete(int? id)
@@ -536,18 +649,26 @@ namespace WebTeam.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CategoryDeleteConfirmed(int id)
         {
-            if (_context.Categories == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Categories'  is null.");
-            }
             var category = await _context.Categories.FindAsync(id);
-            if (category != null)
+            if (category == null)
+            {
+                return NotFound();
+            }
+            var article = _context.Articles.Where(c => c.CategoryId == id);
+
+            if (category != null && !article.Any())
             {
                 _context.Categories.Remove(category);
+                TempData["DeleteSuccessMessage"] = "Category has been deleted successfully!";
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Categories));
             }
+            else
+            {
+                TempData["DeleteSuccessMessage"] = "Error";
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Categories));
+            }
+            return RedirectToAction(nameof(CategoryDelete));
         }
 
         private bool CategoryExists(int id)
@@ -564,6 +685,8 @@ namespace WebTeam.Controllers
             if (_context != null && _context.AcademicYears != null)
             {
                 var academicYears = await _context.AcademicYears
+                                               .OrderByDescending(a => a.AcademicYearID)
+
                                                .ToPagedListAsync(pageNumber, pageSize);
 
                 return View("~/Views/Admin/AcademicYears/Index.cshtml", academicYears);
@@ -574,6 +697,34 @@ namespace WebTeam.Controllers
                 return View(new List<AcademicYear>());
             }
         }
+        public async Task<IActionResult> SearchAcademicYear(string searchString, int? page, string orderBy)
+        {
+            ViewBag.SearchString = searchString;
+
+            var academicYear = _context.AcademicYears.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                academicYear = academicYear.Where(f => f.AcademicYears.Contains(searchString));
+            }
+            switch (orderBy)
+            {
+                case "academic_desc":
+                    academicYear = academicYear.OrderByDescending(a => a.AcademicYears);
+                    break;
+
+                default:
+                    academicYear = academicYear.OrderBy(a => a.AcademicYears);
+                    break;
+            }
+
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
+            var searchResult = await academicYear.ToPagedListAsync(pageNumber, pageSize);
+
+            return View("~/Views/Admin/AcademicYears/Index.cshtml", searchResult);
+        }
+
         // GET: AcademicYears/Details/5
         public async Task<IActionResult> AcademicYearDetails(int? id)
         {
@@ -607,12 +758,24 @@ namespace WebTeam.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Kiểm tra ngày bắt đầu và ngày kết thúc
+                if (academicYear.StartDate >= academicYear.ClosureDate)
+                {
+                    TempData["ErrorMessage1"] = "Closure Date must be greater than Start Date.";
+                    return RedirectToAction(nameof(AcademicYearCreate));
+                }
+
                 _context.Add(academicYear);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(AcademicYears));
+
+                // Đặt thông báo thành công vào TempData
+                TempData["SuccessMessage"] = "An Academic has been created successfully!";
+
+                return RedirectToAction(nameof(AcademicYears)); // Chuyển hướng người dùng về trang Index
             }
             return View(academicYear);
         }
+
 
         // GET: AcademicYears/Edit/5
         public async Task<IActionResult> AcademicYearEdit(int? id)
@@ -660,6 +823,7 @@ namespace WebTeam.Controllers
                         throw;
                     }
                 }
+                TempData["UpdateeSuccessMessage"] = "An Academic has been created successfully!";
                 return RedirectToAction(nameof(AcademicYears));
             }
             return View(academicYear);
@@ -693,14 +857,46 @@ namespace WebTeam.Controllers
                 return Problem("Entity set 'ApplicationDbContext.AcademicYears'  is null.");
             }
             var academicYear = await _context.AcademicYears.FindAsync(id);
-            if (academicYear != null)
+            if (academicYear == null)
+            {
+                return NotFound();
+
+            }
+            var semesterIds = await _context.Semesters
+                .Where(c => c.AcademicYearID == id)
+                .Select(s => (int?)s.SemesterID) // Chuyển đổi thành int? (nullable int)
+                .ToListAsync();
+            var semester = _context.Semesters.Where(c => c.AcademicYearID == id);
+
+            var articles = _context.Articles
+                .Where(a => semesterIds.Contains(a.SemesterId));
+
+
+
+            if (academicYear != null && !semesterIds.Any() )
             {
                 _context.AcademicYears.Remove(academicYear);
+                await _context.SaveChangesAsync();
+                TempData["DeleteSuccessMessage"] = "Faculty has been deleted successfully!";
+                return RedirectToAction(nameof(AcademicYears));
             }
+            else if (academicYear != null && !articles.Any())
+            {
+                _context.Semesters.RemoveRange(semester);
+                _context.AcademicYears.Remove(academicYear);
+                await _context.SaveChangesAsync();
+                TempData["DeleteSuccessMessage"] = "Faculty has been deleted successfully!";
+                return RedirectToAction(nameof(AcademicYears));
+            }
+            else
+            {
+                TempData["DeleteSuccessMessage"] = "The school year cannot be erased! Because there are articles being posted!";
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(AcademicYears));
+            }
+            return RedirectToAction(nameof(AcademicYearDelete));
+/*            return RedirectToAction(nameof(AcademicYears), new { deleted = true });*/
         }
+
 
         private bool AcademicYearExists(int id)
         {
@@ -714,6 +910,7 @@ namespace WebTeam.Controllers
             if (_context != null && _context.Users != null)
             {
                 var users = await _context.Users.Include(u => u.Faculty)
+                                               .OrderByDescending(a => a.Id)
                                                .ToPagedListAsync(pageNumber, pageSize);
 
                 return View("~/Views/Admin/Users/Index.cshtml", users);
@@ -724,7 +921,38 @@ namespace WebTeam.Controllers
                 return View(new List<user>());
             }
         }
+        public async Task<IActionResult> SearchUser(string searchString, int? page, string orderBy)
+        {
+            ViewBag.SearchString = searchString;
 
+            IQueryable<ApplicationUser> users = _context.ApplicationUsers.Include(u => u.Faculty);
+            
+
+
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                users = users.Where(u => u.Name.Contains(searchString));
+            }
+
+            // Sắp xếp nếu có
+            switch (orderBy)
+            {
+                case "user_desc":
+                    users = users.OrderByDescending(u => u.Name);
+                    break;
+                default:
+                    users = users.OrderBy(u => u.Name);
+                    break;
+            }
+
+            // Phân trang
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
+            var paginatedUsers = await users.ToPagedListAsync(pageNumber, pageSize);
+
+            return View("~/Views/Admin/Users/Index.cshtml", paginatedUsers);
+        }
         public async Task<IActionResult> UserEdit(string id)
         {
             if (id == null || _context.Users == null)

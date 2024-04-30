@@ -115,11 +115,11 @@ namespace WebTeam.Areas.Identity.Pages.Account
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-/*              if (result.Succeeded)
-                {
-                    _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
-                }*/
+                /*              if (result.Succeeded)
+                                {
+                                    _logger.LogInformation("User logged in.");
+                                    return LocalRedirect(returnUrl);
+                                }*/
                 if (result.Succeeded)
                 {
                     // Kiểm tra nếu người dùng có role là "Admin"
@@ -127,7 +127,7 @@ namespace WebTeam.Areas.Identity.Pages.Account
                     if (user != null && await _userManager.IsInRoleAsync(user, "Admin"))
                     {
                         _logger.LogInformation("Admin logged in.");
-                        return LocalRedirect("/admin"); // Chuyển hướng đến trang "/admin" nếu là admin
+                        return LocalRedirect("/admin/AcademicYears"); // Chuyển hướng đến trang "/admin" nếu là admin
                     }
                     else
                     {

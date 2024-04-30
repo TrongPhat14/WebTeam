@@ -10,6 +10,8 @@ namespace WebTeam.Data
 
         public string? Title { get; set; }
 
+        public string? Description { get; set; }
+
         public string? Content { get; set; }
 
         public string? MagazineCover { get; set; }
@@ -32,6 +34,10 @@ namespace WebTeam.Data
         public int NoOfLike { get; set; }
 
         public bool Isbool { get; set; }
+        public bool IsCheckMes { get; set; }
+        public bool boolIs { get; set; }
+
+
 
         [ForeignKey("AuthorID")]
         public virtual ApplicationUser? Author { get; set; }

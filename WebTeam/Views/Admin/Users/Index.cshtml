@@ -2,74 +2,13 @@
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
-@model IEnumerable<WebTeam.Data.ApplicationUser>
+@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<WebTeam.Data.ApplicationUser>
 
-    @{
-        Layout = null;
-    }
-@*<h1>User Management</h1>
-
-<h2>Students</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Student ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Faculty</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
-        {
-            if (await UserManager.IsInRoleAsync(user, "Student"))
-            {
-                <tr>
-                    <td>@Html.DisplayFor(modelItem => user.Id)</td>
-                    <td>@Html.DisplayFor(modelItem => user.Name)</td>
-                    <td>@Html.DisplayFor(modelItem => user.Email)</td>
-                    <td>@Html.DisplayFor(modelItem => user.Faculty.FacultyName)</td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@user.Id">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@user.Id">Delete</a>
-                    </td>
-                </tr>
-            }
-        }
-    </tbody>
-</table>
-
-<h2>Marketing Coordinators</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Coordinator ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Faculty</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
-        {
-            if (await UserManager.IsInRoleAsync(user, "Marketing_coordinator"))
-            {
-                <tr>
-                    <td>@Html.DisplayFor(modelItem => user.Id)</td>
-                    <td>@Html.DisplayFor(modelItem => user.Name)</td>
-                    <td>@Html.DisplayFor(modelItem => user.Email)</td>
-                    <td>@Html.DisplayFor(modelItem => user.Faculty.FacultyName)</td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@user.Id">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@user.Id">Delete</a>
-                    </td>
-                </tr>
-            }
-        }
-    </tbody>
-</table>*@
+@{
+    var searchString = ViewBag.SearchString as string;
+    Layout = null;
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -94,6 +33,10 @@
           rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
           crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+
     <!-- link css -->
     <link rel="stylesheet" href="~/asset/css/main.css" />
     <link rel="stylesheet" href="~/asset/css/main1.css" />
@@ -103,21 +46,26 @@
     <title>Magazine of University</title>
 </head>
 <body>
-    <section class="allsubmission">
+    <section class="setdeadline">
         <header>
             <section class="header_logo container">
                 <div class="left">
-                    <a class="home_icon" href="../index.html">
+                    <a class="home_icon" asp-controller="Home" asp-action="">
                         <i class="fa-solid fa-house"></i>
                     </a>
                     <div class="container_search">
                         <div class="icon_search">
                             <i class="search fa-solid fa-magnifying-glass"></i>
                         </div>
-                        <div class="input_search">
-                            <input type="text" placeholder="search" id="search" />
-                            <i class="clear fa fa-times"></i>
-                        </div>
+                        <form asp-controller="" asp-action="Search">
+                            <div class="input_search">
+
+                                <input type="text" name="Search"
+                                       placeholder="search">
+                                <i class="clear fa fa-times"></i>
+
+                            </div>
+                        </form>
                     </div>
                     <a class="search_mobile" href="../search.html">
                         <i class="fa-solid fa-magnifying-glass"></i>
@@ -127,52 +75,41 @@
                     </a>
                 </div>
                 <div class="brand_name">
-                    <a href="../index.html">Magazine of University</a>
+                    <a asp-controller="Home" asp-action="">Magazine of University</a>
                 </div>
                 <div class="right">
-                    <button><i class="fa-solid fa-bell"></i></button>
-                    <div class="dropdown">
-                        <a class="btn dropdown_icon dropdown-toggle"
-                           href="#"
-                           role="button"
-                           id="dropdownMenuLink"
-                           data-bs-toggle="dropdown"
-                           aria-expanded="false">
-                            <i class="fa-solid fa-user"></i>
-                        </a>
-                    </div>
+                    <span class="ms-2 fs-6 fw-bold text-uppercase text-center">@User.Identity?.Name</span>
                 </div>
             </section>
         </header>
+
         <section class="main_content">
             <div class="left_category">
                 <ul>
                     <li>
-                        <a href="dashboard.html">Dashboard</a>
+                        <a asp-area="" asp-action="AcademicYears">Academic Year</a>
                     </li>
                     <li>
-                        <a href="academicYear.html">Academic Year</a>
+                        <a asp-area="" asp-action="Semesters">Semester</a>
                     </li>
                     <li>
-                        <a href="semester.html">Semester</a>
-                    </li>
-                    <li>
-                        <a href="faculty.html">Faculty</a>
+                        <a asp-area="" asp-action="Faculties">Faculty</a>
                     </li>
                     <li class="active_link">
-                        <a href="account.html">Accounts</a>
+                        <a asp-area="" asp-action="Users">Accounts</a>
                     </li>
                     <li>
-                        <a href="categories.html">Categories</a>
+                        <a asp-area="" asp-action="Categories">Categories</a>
                     </li>
                     <li>
-                        <a href="profile.html">Profile</a>
+                        <a asp-area="Identity" asp-page="/Account/Manage/Profile">Profile</a>
                     </li>
-                    <li>
-                        <a href="#">
-                            Log out
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                        </a>
+                    <li class="log_out">
+                        <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+                            <button type="submit" class="btn btn-outline-success btn-lg me-3 ms-3 log_out">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                            </button>
+                        </form>
                     </li>
                 </ul>
             </div>
@@ -188,65 +125,80 @@
                             </a>
                             <ul>
                                 <li>
-                                    <a href="dashboard.html">Dashboard</a>
+                                    <a asp-area="" asp-action="AcademicYears">Academic Year</a>
                                 </li>
                                 <li>
-                                    <a href="academicYear.html">Academic Year</a>
+                                    <a asp-area="" asp-action="Semesters">Semester</a>
                                 </li>
                                 <li>
-                                    <a href="semester.html">Semester</a>
-                                </li>
-                                <li>
-                                    <a href="faculty.html">Faculty</a>
+                                    <a asp-area="" asp-action="Faculties">Faculty</a>
                                 </li>
                                 <li class="active_link">
-                                    <a href="account.html">Accounts</a>
+                                    <a asp-area="" asp-action="Users">Accounts</a>
                                 </li>
                                 <li>
-                                    <a href="categories.html">Categories</a>
+                                    <a asp-area="" asp-action="Categories">Categories</a>
                                 </li>
                                 <li>
-                                    <a href="profile.html">Profile</a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        Log out
-                                        <i class="fa-solid fa-right-from-bracket"></i>
-                                    </a>
+                                    <a asp-area="Identity" asp-page="/Account/Manage/Profile">Profile</a>
                                 </li>
                             </ul>
                         </div>
                     </div>
                     <div class="wrap">
-                        <div class="search">
-                            <input type="text"
-                                   class="searchTerm"
-                                   placeholder="searching...." />
-                            <button type="submit" class="searchButton">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </div>
+                        <form asp-controller="Admin" asp-action="SearchUser" method="get">
+                            <div class="search">
+                                <input type="text"
+                                       class="searchTerm"
+                                       name="searchString"
+                                       placeholder="searching...." />
+                                <button type="submit" class="searchButton">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
                 <nav class="subnavigate">
                     <ul>
                         <li class="active">
-                            <a href="account.html">List User</a>
+                            <a asp-action="Users">List User</a>
                         </li>
                         <li>
                             <a asp-area="Identity" asp-page="/Account/Register">Create new</a>
                         </li>
                     </ul>
-                    <div class="submenu">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div id="successAlert" class="alert alert-success" role="alert">
+                            @TempData["SuccessMessage"]
+                        </div>
+                    }
+                    @if (TempData["UpdateSuccessMessage"] != null)
+                    {
+                        <div id="successAlert" class="alert alert-success" role="alert">
+                            @TempData["UpdateSuccessMessage"]
+                        </div>
+                    }
+                    @if (TempData["DeleteSuccessMessage"] != null)
+                    {
+                        <div id="successAlert" class="alert alert-success" role="alert">
+                            @TempData["DeleteSuccessMessage"]
+                        </div>
+                    }
+                    <div class="submenu_filter">
                         <button type="button" class="submenu-toggle">
                             <i class="fa-solid fa-filter"></i>
                         </button>
                         <ul class="submenu-content">
-                            <li><a href="#">Filter Option 1</a></li>
-                            <li><a href="#">Filter Option 2</a></li>
-                            <li><a href="#">Filter Option 3</a></li>
+                            <li><a class="dropdown-item" href="/Admin/SearchUser?searchString=@ViewBag.SearchString&orderBy=user_asc">User Name (A - Z)</a></li>
+                            <li><a class="dropdown-item" href="/Admin/SearchUser?searchString=@ViewBag.SearchString&orderBy=user_desc">User Name (Z - A)</a></li>
+                            <li><a class="dropdown-item" asp-action="Users">Refresh</a></li>
+
                         </ul>
                     </div>
+
+
                 </nav>
 
                 <div id="students">
@@ -254,10 +206,10 @@
                         <table class="table table-hover table_submission">
                             <thead>
                                 <tr>
-                                    <th scope="col">ID</th>
                                     <th scope="col">Full Name</th>
                                     <th scope="col">Email</th>
                                     <th scope="col" class="role">Role</th>
+                                    <th scope="col">Faculty</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -279,12 +231,6 @@
                                                    type="button">
                                                     <i class="fa-solid fa-pen-to-square"></i>
                                                 </a>
-                                                <button class="download_btn" type="button">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                                <a href="accountDetails.html">
-                                                    <i class="fa-solid fa-circle-info"></i>
-                                                </a>
                                             </td>
                                         </tr>
                                     }
@@ -292,18 +238,17 @@
                             </tbody>
                         </table>
                     </div>
+                    @if (!Model.Any())
+                    {
+                        <div class="Center text-center fs-3 pt-3 text-danger fw-bold">
+                            <strong>Not Things Else</strong>
+                        </div>
+                    }
                     <div class="pagination">
-                        <i class="fa-solid fa-angle-left"></i>
-                        <ul>
-                            <li><button type="button">1</button></li>
-                            <li><button type="button">2</button></li>
-                            <li><button type="button">3</button></li>
-                            <li><button type="button">4</button></li>
-                            <li><button type="button">5</button></li>
-                        </ul>
-                        <i class="fa-solid fa-angle-right"></i>
+                        @Html.PagedListPager(Model, page => Url.Action("Users", new { page }), new PagedListRenderOptions { LiElementClasses = new[] { "page-item" }, PageClasses = new[] { "page-link" } })
                     </div>
                 </div>
+            </div>
         </section>
 
         <script src="~/asset/js/main.js"></script>
@@ -363,10 +308,19 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
             crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- Main -->
     <script src="~/asset/js/main.js"></script>
     <script src="~/asset/js/more.js"></script>
     <script>
+        $(document).ready(function () {
+            setTimeout(function () {
+                $("#successAlert").fadeOut("slow", function () {
+                    $(this).remove();
+                });
+            }, 2000);
+        });
+
         document.addEventListener("DOMContentLoaded", function () {
             const filterMobileBtn = document.querySelector(".sidebar_mobile");
             const hideFilterBtn = document.querySelector(".hideSidebar");
@@ -591,7 +545,7 @@
                         </td>
                     </tr>
                     }
-                }       
+                }
                 </tbody>
               </table>
             </div>
@@ -615,10 +569,10 @@
                     <p class="d-block p-2 fs-5 text fw-bold">
                       ID:<br>
                         <div class="author_name bg-white p-3 mb-2 rounded">
-                            <input type="text" 
-                            class="form-control border border-white" 
-                            placeholder="ID" 
-                            aria-describedby="addon-wrapping"> 
+                            <input type="text"
+                            class="form-control border border-white"
+                            placeholder="ID"
+                            aria-describedby="addon-wrapping">
                         </div>
                     </p>
                 </div>
@@ -626,10 +580,10 @@
                     <p class="d-block p-2 fs-5 text fw-bold">
                       Fullname:<br>
                         <div class="author_name bg-white p-3 mb-2 rounded">
-                            <input type="text" 
-                            class="form-control border border-white" 
-                            placeholder="Fullname" 
-                            aria-describedby="addon-wrapping"> 
+                            <input type="text"
+                            class="form-control border border-white"
+                            placeholder="Fullname"
+                            aria-describedby="addon-wrapping">
                         </div>
                     </p>
                 </div>
@@ -637,10 +591,10 @@
                     <p class="d-block p-2 fs-5 text fw-bold">
                       Email:<br>
                         <div class="author_name bg-white p-3 mb-2 rounded">
-                            <input type="email" 
-                            class="form-control border border-white" 
-                            placeholder="Email" 
-                            aria-describedby="addon-wrapping"> 
+                            <input type="email"
+                            class="form-control border border-white"
+                            placeholder="Email"
+                            aria-describedby="addon-wrapping">
                         </div>
                     </p>
                 </div>
@@ -648,10 +602,10 @@
                     <p class="d-block p-2 fs-5 text fw-bold">
                       Password:<br>
                         <div class="author_name bg-white p-3 mb-2 rounded">
-                            <input type="password" 
-                            class="form-control border border-white" 
-                            placeholder="Password" 
-                            aria-describedby="addon-wrapping"> 
+                            <input type="password"
+                            class="form-control border border-white"
+                            placeholder="Password"
+                            aria-describedby="addon-wrapping">
                         </div>
                     </p>
                 </div>

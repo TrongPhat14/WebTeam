@@ -44,7 +44,6 @@
                 <form id="form" class="" action="" method="post" onsubmit="return validation()">
                     <div class="container_box">
                         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-                        <span id="error_psw"></span>
                         <div class="email_box">
                             <i class="fa-solid fa-envelope"></i>
                             <input asp-for="Input.Email" autocomplete="username" aria-required="true" placeholder="Enter email" />
@@ -54,7 +53,6 @@
                             </div>
                             <span asp-validation-for="Input.Email" class="text-danger"></span>
                         </div>
-                        <span id="error_psw"></span>
                         <div class="password_box">
                             <i class="fa-solid fa-lock"></i>
                             <input asp-for="Input.Password" autocomplete="current-password" aria-required="true" placeholder="Enter password" />
@@ -83,7 +81,7 @@
     <script src="~/asset/js/main.js"></script>
 </body>
 </html>
-    @*    <div class="col-md-6 col-md-offset-2">
+@*    <div class="col-md-6 col-md-offset-2">
             <section>
                 <h3>Use another service to log in.</h3>
                 <hr />

@@ -4,3 +4,16 @@
 <h1>@ViewData["Title"]</h1>
 
 <p>Use this page to detail your site's privacy policy.</p>
+@if (TempData["UpdateMes"] != null)
+{
+    <div id="successAlert" class="alert alert-success" role="alert">
+        @TempData["UpdateMes"]
+    </div>
+}
+
+@if (TempData["1"] != null)
+{
+    <div id="successAlert1" class="alert alert-success" role="alert">
+        @TempData["1"]
+    </div>
+}

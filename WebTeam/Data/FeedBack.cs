@@ -12,6 +12,8 @@ namespace WebTeam.Data
         public string? Content { get; set; }
 
         public DateTime? SentDate { get; set; }
+        public bool IsCheckMes { get; set; }
+
 
         public string? Marketing_coordinatorID { get; set; }
 

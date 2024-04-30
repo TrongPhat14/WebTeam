@@ -1,16 +1,4 @@
-﻿    const likeButton = document.querySelector('.like');
-
-    likeButton.addEventListener('click', function() {
-            const isLiked = likeButton.classList.contains('liked');
-
-    if (isLiked) {
-        likeButton.classList.remove('liked');
-            } else {
-        likeButton.classList.add('liked');
-            }
-        });
-
-    // Show more comment
+﻿    // Show more comment
     document.addEventListener('DOMContentLoaded', function () {
             const showMoreButton = document.getElementById('show_more_btn');
     const comments = document.querySelectorAll('.comment');

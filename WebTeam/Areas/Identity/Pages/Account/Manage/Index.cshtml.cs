@@ -6,6 +6,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -14,21 +15,26 @@ using WebTeam.Services;
 
 namespace WebTeam.Areas.Identity.Pages.Account.Manage
 {
+    [Authorize(Roles = "Student")]
+
     public class IndexModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IFileService _fileService;
+        private readonly ApplicationDbContext _context;
+
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IFileService fileService
+            IFileService fileService, ApplicationDbContext context
             )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             this._fileService = fileService;
+            _context = context;
 
         }
 
@@ -77,16 +83,13 @@ namespace WebTeam.Areas.Identity.Pages.Account.Manage
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
             Username = userName;
-
+            await _context.Entry(user).Reference(u => u.Faculty).LoadAsync();
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber,
-                Name = user.Name,
                 ProfilePicture = user.ProfilePicture
 
             };
         }
-
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -94,6 +97,7 @@ namespace WebTeam.Areas.Identity.Pages.Account.Manage
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
+            ViewData["CurrentUser"] = user;
 
             await LoadAsync(user);
             return Page();
@@ -123,11 +127,11 @@ namespace WebTeam.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
-            if (Input.Name != user.Name)
+/*            if (Input.Name != user.Name)
             {
                 user.Name = Input.Name;
                 await _userManager.UpdateAsync(user);
-            }
+            }*/
 
             if (Input.ImageFile != null)
             {

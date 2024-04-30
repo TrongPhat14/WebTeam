@@ -7,89 +7,8 @@
 @{
     ViewData["Title"] = "Create";
     Layout = null;
-
-    var currentUser = await UserManager.GetUserAsync(User);
 }
-@*<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" enctype="multipart/form-data" id="createForm">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            @if (!ViewData.ModelState.IsValid)
-            {
-                <div class="alert alert-danger" id="errorMessage" style="display:none;">
-                    <ul>
-                        @foreach (var key in ViewData.ModelState.Keys)
-                        {
-                            foreach (var errorMessage in ViewData.ModelState[key].Errors)
-                            {
-                                <li>@errorMessage.ErrorMessage</li>
-                            }
-                        }
-                    </ul>
-                </div>
-            }
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Content" class="control-label"></label>
-                <!-- Thêm thuộc tính accept để chỉ chấp nhận tệp định dạng docx hoặc pdf-->
-                <input type="file" name="file" class="form-control" accept=".docx, .pdf" required />
-                <!-- Sử dụng thuộc tính required để bắt buộc người dùng chọn tệp -->
-                <span asp-validation-for="Content" class="text-danger"></span>
-                <div id="fileErrorMessage" class="text-danger" style="display:none;">
-                    Only .docx and .pdf files are allowed.
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="MagazineCover" class="control-label"></label>
-                <input asp-for="MagazineCover" type="file" name="coverFile" class="form-control" accept="image/*" required />
-                <span asp-validation-for="MagazineCover" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CategoryId" class="control-label"></label>
-                <select asp-for="CategoryId" class ="form-control" asp-items="ViewBag.CategoryId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Comment" class="control-label"></label>
-                <input asp-for="Comment" class="form-control" />
-                <span asp-validation-for="Comment" class="text-danger"></span>
-            </div>
-            <input type="hidden" asp-for="SemesterId" />
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
 
-@section Scripts {
-    <script>
-        document.getElementById("createForm").addEventListener("submit", function (event) {
-            var title = document.getElementById("Title").value.trim();
-
-            if (title === '') {
-                document.getElementById("titleError").style.display = "block";
-                event.preventDefault(); // Ngăn chặn việc submit form
-            }
-
-        });
-
-
-                // Hiển thị thông báo khi người dùng nộp file PDF
-
-    </script>
-
-
-
-
-
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}*@
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -118,17 +37,22 @@
         <header>
             <section class="header_logo container">
                 <div class="left">
-                    <a class="home_icon" href="index.html">
+                    <a class="home_icon" asp-controller="" asp-action="">
                         <i class="fa-solid fa-house"></i>
                     </a>
                     <div class="container_search">
                         <div class="icon_search">
                             <i class="search fa-solid fa-magnifying-glass"></i>
                         </div>
-                        <div class="input_search">
-                            <input type="text" placeholder="search" id="search" />
-                            <i class="clear fa fa-times"></i>
-                        </div>
+                        <form asp-controller="" asp-action="Search">
+                            <div class="input_search">
+
+                                <input type="text" name="Search"
+                                       placeholder="search">
+                                <i class="clear fa fa-times"></i>
+
+                            </div>
+                        </form>
                     </div>
                     <a class="search_mobile" href="search.html">
                         <i class="fa-solid fa-magnifying-glass"></i>
@@ -138,230 +62,176 @@
                     </a>
                 </div>
                 <div class="brand_name">
-                    <a href="index.html">Magazine of University</a>
+                    <a asp-controller="" asp-action="Index">Magazine of University</a>
                 </div>
                 <div class="right">
-                    <button><i class="fa-solid fa-bell"></i></button>
-                    <div class="dropdown">
-                        <a class="btn dropdown_icon dropdown-toggle"
-                           href="#"
-                           role="button"
-                           id="dropdownMenuLink"
-                           data-bs-toggle="dropdown"
-                           aria-expanded="false">
-                            <i class="fa-solid fa-user"></i>
-                        </a>
-
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <li>
-                                <a class="dropdown-item" href="profile.html">Profile</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="submission.html">Submission</a>
-                            </li>
-                            <li><a class="dropdown-item" href="#">Recently seen</a></li>
-                            <li><a class="dropdown-item" href="#">Logout</a></li>
-                        </ul>
-                    </div>
+                    <span class="ms-2 fs-6 fw-bold text-uppercase text-center">@User.Identity?.Name</span>
                 </div>
-            </section>
-            <section class="hero">
-                <nav>
-                    <ul>
-                        <li>
-                            <a class="category" href="#">Information Technology</a>
-                            <ul class="submenu">
-                                <li><a href="#">Computer Science</a></li>
-                                <li><a href="#">Information Technology</a></li>
-                                <li><a href="#">Computer Engineer</a></li>
-                                <li><a href="#">Network Technology</a></li>
-                                <li><a href="#">Software Engineer</a></li>
-                                <li><a href="#">Management Information Systems</a></li>
-                                <li><a href="#">Big Data & Machine Learning</a></li>
-                                <li>
-                                    <a href="#">Data Communication and Computer Network</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a class="category" href="#">Business Administration</a>
-                            <ul class="submenu">
-                                <li><a href="#">Digital Marketing</a></li>
-                                <li><a href="#">International Bussiness</a></li>
-                                <li><a href="#">Hotel Management</a></li>
-                                <li>
-                                    <a href="#">Management Of Tourism and Travel Services</a>
-                                </li>
-                                <li><a href="#">Multimedia Management</a></li>
-                                <li><a href="#">Finance</a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a class="category" href="#">Graphic & Digital Design</a>
-                            <ul class="submenu">
-                                <li><a href="#">Brand Identity Design</a></li>
-                                <li><a href="#">Marketing Advertising Design</a></li>
-                                <li><a href="#">Design UI/UX Interface</a></li>
-                                <li><a href="#">Design Publications and Magazines</a></li>
-                                <li>
-                                    <a href="#">Motion Graphic Design - Motion Graphics</a>
-                                </li>
-                                <li>
-                                    <a href="#">Art Illustration Design - Illustration Design</a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </nav>
             </section>
         </header>
         <main class="add_submission_conatiner">
             <h3>
                 Add Submission
             </h3>
-            <div class="details_submission">
-                <form asp-action="Create" enctype="multipart/form-data" id="createForm">
+            <form asp-action="Create" enctype="multipart/form-data" id="createForm">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="due_to">
-                    <p>Due To</p>
-                    <div class="due_to_content">
-                        <i class="fa-solid fa-calendar-days"></i>
+                <div class="details_submission">
+
+                    <div class="due_to">
+                        <p>Due To</p>
+                        <div class="due_to_content">
+                            <i class="fa-solid fa-calendar-days"></i>
                             @if (ViewBag.CurrentSemester != null)
                             {
-                                <span>@ViewBag.CurrentSemester.Dl1.ToString("dd/MM/yyyy, HH:mm")</span>
-                            }
-                    </div>
-                </div>
-                <div class="submission_status">
-                    <p>Submission Status</p>
-                    <p>
-                        <i class="fa-solid fa-circle-info"></i>
-                        The article is pending submission, but you still have the chance to submit it.
-                    </p>
-                </div>
-                <div class="submission_title">
-                    <p>Title</p>
-                    <input asp-for="Title" class="form-control" />
-                    <span asp-validation-for="Title" class="text-danger"></span>
-                </div>
-                <div class="file_submisson d-flex">
-                    <div class="attachment">
-                        <p>Attachment</p>
-                        <input asp-for="Content" type="file" name="file" class="form-control" accept=".docx, .pdf" required />
-                        <!-- Sử dụng thuộc tính required để bắt buộc người dùng chọn tệp -->
-                        <span asp-validation-for="Content" class="text-danger"></span>
-                        <div id="fileErrorMessage" class="text-danger" style="display:none;">
-                            Only .docx and .pdf files are allowed.
-                        </div>
-                    </div>
-                    <div class="attachment">
-                        <p>Photo</p>
-                        <input asp-for="MagazineCover" type="file" name="coverFile" class="form-control" accept="image/*" required />
-                        <span asp-validation-for="MagazineCover" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="select_topic">
-                    <p>Select one topic:</p>
-                    <div class="list_topic">
-                        <ol class="column_list">
-                                @foreach (var category in ViewBag.CategoryId) // Sử dụng ViewBag.CategoryId hoặc danh sách category từ model
+                                var currentSemester = ViewBag.CurrentSemester;
+                                DateTime dl1 = currentSemester.Dl1;
+                                DateTime dl2 = currentSemester.DL2;
+                                DateTime now = DateTime.Now;
+
+                                // So sánh thời gian hiện tại với Dl1 và Dl2
+                                if (now < dl1)
                                 {
-                                    <li>
-                                        <label>
-                                            <input type="radio" name="SelectedCategory" value="@category.Value">
-                                            @category.Text
-                                        </label>
-                                    </li>
+                                    <span>@dl1.ToString("dd/MM/yyyy, HH:mm")</span>
                                 }
-                            </ol>
-                    </div>
-                </div>
-                <div class="author">
-                    <p>Author</p>
-                    <div class="author_input">
-                        <div class="author_content">
-                            <i class="fa-solid fa-user"></i>
-                                @currentUser.Name /@currentUser.Email
+                                else if (now >= dl1)
+                                {
+                                    <span>@dl2.ToString("dd/MM/yyyy, HH:mm")</span>
+                                }
+                                else
+                                {
+                                    // Xử lý trường hợp khác nếu cần
+                                }
+                            }
+
                         </div>
                     </div>
-                </div>
-                <div class="submission_comment">
-                    <p>Submission Comment</p>
-                    <input asp-for="Comment" class="form-control" />
-                    <span asp-validation-for="Comment" class="text-danger"></span>
-                </div>
-@*                    <div class="form-group">
-                        <label asp-for="Comment" class="control-label"></label>
-                        <input asp-for="Comment" class="form-control" />
-                        <span asp-validation-for="Comment" class="text-danger"></span>
-                    </div>*@
-                <div class="submission_comment">
-                    <p>Submission Description</p>
-                    <input type="text" name="" id="">
-                </div>
-                <div class="term_conditions">
-                    <p>Term & Conditions</p>
-                    <div class="term_and_conditions">
-                        <ul>
-                            <li>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                Nulla nec justo ut velit placerat maximus. Duis quis velit
-                                nec sem convallis bibendum. Donec ac nulla non augue accumsan
-                                fermentum. Maecenas id quam sit amet tortor aliquet tempor.
-                                Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
-                                posuere cubilia Curae; Quisque ut mi eu turpis tincidunt dapibus.
-                                Suspendisse potenti.
-                            </li>
-                            <li>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                Nulla nec justo ut velit placerat maximus. Duis quis velit
-                                nec sem convallis bibendum. Donec ac nulla non augue accumsan
-                                fermentum. Maecenas id quam sit amet tortor aliquet tempor.
-                                Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
-                                posuere cubilia Curae; Quisque ut mi eu turpis tincidunt dapibus.
-                                Suspendisse potenti.
-                            </li>
-                            <li>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                Nulla nec justo ut velit placerat maximus. Duis quis velit
-                                nec sem convallis bibendum. Donec ac nulla non augue accumsan
-                                fermentum. Maecenas id quam sit amet tortor aliquet tempor.
-                                Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
-                                posuere cubilia Curae; Quisque ut mi eu turpis tincidunt dapibus.
-                                Suspendisse potenti.
-                            </li>
-                            <li>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                Nulla nec justo ut velit placerat maximus. Duis quis velit
-                                nec sem convallis bibendum. Donec ac nulla non augue accumsan
-                                fermentum. Maecenas id quam sit amet tortor aliquet tempor.
-                                Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
-                                posuere cubilia Curae; Quisque ut mi eu turpis tincidunt dapibus.
-                                Suspendisse potenti.
-                            </li>
-                            <li>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                Nulla nec justo ut velit placerat maximus. Duis quis velit
-                                nec sem convallis bibendum. Donec ac nulla non augue accumsan
-                                fermentum. Maecenas id quam sit amet tortor aliquet tempor.
-                                Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
-                                posuere cubilia Curae; Quisque ut mi eu turpis tincidunt dapibus.
-                                Suspendisse potenti.
-                            </li>
-                        </ul>
+                    <div class="submission_status">
+                        <p>Submission Status</p>
+                        <p>
+                            <i class="fa-solid fa-circle-info"></i>
+                            The article is pending submission, but you still have the chance to submit it.
+                        </p>
                     </div>
-                    <input type="radio" name="" id="">Agree to Terms and Conditions</input>
+                    <div class="submission_title">
+                        <p>Title</p>
+                        <input asp-for="Title" type="text"
+                               class="form-control border border-white"
+                               aria-describedby="addon-wrapping"
+                               placeholder="Input Title Name (25-75 with no special characters )"
+                               required
+                               maxlength="75"
+                               minlength="25"
+                               oninvalid="this.setCustomValidity('Please enter the correct requested information')"
+                               oninput="this.setCustomValidity('')">
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    <div class="file_submisson d-flex">
+                        <div class="attachment">
+                            <p>Attachment</p>
+                            <input asp-for="Content" type="file" name="file" class="form-control" accept=".docx" onchange="showPreviewedImage()" required />
+                            <!-- Sử dụng thuộc tính required để bắt buộc người dùng chọn tệp -->
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                            <div id="fileErrorMessage" class="text-danger" style="display:none;">
+                                Only .docx and .pdf files are allowed.
+                            </div>
+                            <div class="img_file" id="imagePreviewed" style="display: none;">
+                                <img style="width: 30%;" src="~/asset/img/unnamed.png" alt="">
+                            </div>
+                        </div>
+                        <div class="attachment">
+                            <p>Photo</p>
+                            <input asp-for="MagazineCover" type="file" name="coverFile" class="form-control" accept="image/*" onchange="previewImage(event)" required />
+                            <span asp-validation-for="MagazineCover" class="text-danger"></span>
+                            <div class="img_file" id="imagePreview" style="display: none;">
+                                <img style="width: 30%;" src="" alt="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="select_topic">
+                        <p>Select one topic:</p>
+                        <div class="list_topic">
+                            <select style="width: 30%;    height: 40px;     border: none;     padding: 5px;" asp-for="CategoryId" asp-items="ViewBag.CategoryId"></select>
+                        </div>
+                    </div>
+                    <div class="author">
+                        <p>Author</p>
+                        <div class="author_input">
+                            <div class="author_content">
+                                <i class="fa-solid fa-user"></i>
+                                @User.Identity.Name
+                            </div>
+                        </div>
+                    </div>
+                    <div class="submission_comment">
+                        <p>Submission Comment</p>
+                        <input asp-for="Comment" class="form-control border border-white"
+                               aria-describedby="addon-wrapping"
+                               placeholder="Input Comment Name"
+                               maxlength="400"
+                               minlength="0" />
+                        <span asp-validation-for="Comment" class="text-danger"></span>
+                    </div>
+                    <div class="submission_comment">
+                        <p>Submission Description</p>
+                        <textarea asp-for="Description" cols="60" rows="3" class="form-control border border-white"
+                                  aria-describedby="addon-wrapping"
+                                  placeholder="Input Description Name"
+                                  required
+                                  maxlength="300"
+                                  minlength="0"
+                                  pattern="[A-Za-z0-9\s]*"
+                                  oninvalid="this.setCustomValidity('Please enter the correct requested information')"
+                                  oninput="this.setCustomValidity('')"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="term_conditions">
+                        <p>Term & Conditions</p>
+                        <div class="term_and_conditions mb-3">
+                            <ul>
+                                <li>
+                                    1. Paper Standards:
+                                    - Papers must adhere to standards of quality and ethics in scientific research.
+                                    - All references must be properly cited and attributed.
+                                </li>
+                                <li>
+                                    2. Formatting Requirements:
+                                    - Papers should be written in academic language, avoiding inappropriate or confusing language.
+                                    - The formatting of the paper must adhere to the guidelines of the organization or conference to which the student is submitting.
+                                </li>
+                                <li>
+                                    3. Intellectual Property Rights:
+                                    - Students must affirm that the submitted paper is their original research work and does not infringe upon the copyrights of any other individual.
+                                </li>
+                                <li>
+                                    4. Timeframe Regulations:
+                                    - Students must adhere to the deadlines set by the editor(s) and/or the receiving organization.
+                                </li>
+                                <li>
+                                    5. Feedback and Revisions:
+                                    - Students will receive feedback from the editor regarding the acceptance or rejection of the paper.
+                                    - If necessary, students must revise the paper according to the editor's requirements before acceptance.
+                                </li>
+                                <li>
+                                    6. Acceptance and Distribution:
+                                    - Students agree that the acceptance of the paper does not guarantee publication.
+                                    - Papers may be accepted or rejected without providing a reason.
+                                <li>
+                                    7. Rights and Responsibilities:
+                                    - Students are responsible for the content and accuracy of the submitted paper.
+                                    - Any issues related to violations of regulations or causing disputes will be handled according to the policies of the organization or conference.
+                                </li>
+                            </ul>
+                        </div>
+                        <input type="radio" name="terms" id="terms" value="agree" required>
+                        <label for="terms">Agree to Terms and Conditions</label>
+                    </div>
+                    <input type="hidden" asp-for="SemesterId" />
+                    <div class="form-group">
+                        <input type="submit" value="Create" class="btn_add_article" />
+                    </div>
                 </div>
-                <input type="hidden" asp-for="SemesterId" />
-                <div class="form-group">
-                    <input type="submit" value="Create" class="btn btn-primary" />
-                </div>
-@*                <div class="btn_add_article">
-                    <button type="button">Upload</button>
-                    <button type="button">Reset</button>
-                </div>*@
-                </form>
-            </div>
+            </form>
+
         </main>
     </section>
     <!-- Footer -->
@@ -418,5 +288,50 @@
     <!-- Main -->
     <script src="~/asset/js/main.js"></script>
     <script src="~/asset/js/more.js"></script>
+    <script>
+        document.getElementById("createForm").addEventListener("submit", function (event) {
+            var title = document.getElementById("Title").value.trim();
+
+            if (title === '') {
+                document.getElementById("titleError").style.display = "block";
+                event.preventDefault(); // Ngăn chặn việc submit form
+            }
+
+        });
+
+
+        // Hiển thị thông báo khi người dùng nộp file PDF
+
+    </script>
+    <script>
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var output = document.getElementById('imagePreview');
+                output.style.display = 'block';
+                output.getElementsByTagName('img')[0].src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+        function showPreviewedImage() {
+            var fileInput = document.querySelector('input[type="file"]');
+            var fileName = fileInput.value;
+            // Kiểm tra xem người dùng đã chọn file và có phải là file .docx hay không
+            if (fileName && fileName.toLowerCase().endsWith('.docx')) {
+                var output = document.getElementById('imagePreviewed');
+                output.style.display = 'block';
+            }
+        }
+
+    </script>
+
+
+
+
+
+    @*        @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }*@
+
 </body>
 </html>

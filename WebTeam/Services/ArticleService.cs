@@ -18,13 +18,18 @@ namespace WebTeam.Services
 
         public IQueryable<Article> GetAll()
         {
-            var applicationDbContext = _context.Articles.Include(l => l.Author);
+            var applicationDbContext = _context.Articles.Include(l => l.Author)
+                .Include(l => l.Faculty)
+                .Include(l => l.Category)
+                ;
             return applicationDbContext;
         }
 
         public async Task<Article> GetById(int? id)
         {
             var article = await _context.Articles.Include(l => l.Author)
+                .Include(l => l.Faculty)
+                .Include(l => l.Category)
                 .Include(l => l.Comments)
                 .ThenInclude(l => l.User)
                 .FirstOrDefaultAsync(m => m.ArticleId == id);

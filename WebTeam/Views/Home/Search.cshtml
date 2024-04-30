@@ -1,4 +1,8 @@
 ﻿@model IEnumerable<WebTeam.Data.Article>
+@using WebTeam.Data;
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 @{
     ViewData["Title"] = "Sreach Page";
@@ -28,6 +32,8 @@
           rel="stylesheet" />
     <!-- CSS -->
     <link rel="stylesheet" href="~/asset/css/main.css" />
+    <link rel="stylesheet" href="~/asset/css/main1.css" />
+
     <link rel="stylesheet" href="~/asset/css/responsive.css" />
     <title>Magazine of University</title>
 </head>
@@ -36,17 +42,22 @@
         <header>
             <section class="header_logo container">
                 <div class="left">
-                    <a class="home_icon" href="index.html">
+                    <a class="home_icon" asp-action="Index">
                         <i class="fa-solid fa-house"></i>
                     </a>
                     <div class="container_search">
                         <div class="icon_search">
                             <i class="search fa-solid fa-magnifying-glass"></i>
                         </div>
-                        <div class="input_search">
-                            <input type="text" placeholder="search" id="search" />
-                            <i class="clear fa fa-times"></i>
-                        </div>
+                        <form asp-controller="" asp-action="Search">
+                            <div class="input_search">
+
+                                <input type="text" name="Search"
+                                       placeholder="search">
+                                <i class="clear fa fa-times"></i>
+
+                            </div>
+                        </form>
                     </div>
                     <a class="search_mobile" href="search.html">
                         <i class="fa-solid fa-magnifying-glass"></i>
@@ -56,81 +67,33 @@
                     </a>
                 </div>
                 <div class="brand_name">
-                    <a href="index.html">Magazine of University</a>
+                    <a asp-action="Index">Magazine of University</a>
                 </div>
                 <div class="right">
-                    <button><i class="fa-solid fa-bell"></i></button>
                     <div class="dropdown">
-                        <a class="btn dropdown_icon dropdown-toggle"
-                           href="#"
-                           role="button"
-                           id="dropdownMenuLink"
-                           data-bs-toggle="dropdown"
-                           aria-expanded="false">
-                            <i class="fa-solid fa-user"></i>
-                        </a>
-
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <li>
-                                <a class="dropdown-item" href="profile.html">Profile</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="submission.html">Submission</a>
-                            </li>
-                            <li><a class="dropdown-item" href="#">Recently seen</a></li>
-                            <li><a class="dropdown-item" href="#">Logout</a></li>
-                        </ul>
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <a class="btn dropdown_icon dropdown-toggle"
+                            role="button"
+                            id="dropdownMenuLink"
+                            title="Sign in">
+                                <i class="fa-solid fa-user"></i>
+                                <span class="ms-2 fs-6 fw-bold text-uppercase text-center">@User.Identity?.Name</span>
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn dropdown_icon dropdown-toggle"
+                               asp-area="Identity" asp-page="/Account/Login"
+                               role="button"
+                               id="dropdownMenuLink"
+                               title="Sign in">
+                                <i class="fa-solid fa-user"></i>
+                                <span class="ms-2 fs-6 fw-bold text-uppercase text-center">@User.Identity?.Name</span>
+                            </a>
+                        }
                     </div>
                 </div>
-            </section>
-            <section class="hero">
-                <nav>
-                    <ul>
-                        <li>
-                            <a class="category" href="#">Information Technology</a>
-                            <ul class="submenu">
-                                <li><a href="#">Computer Science</a></li>
-                                <li><a href="#">Information Technology</a></li>
-                                <li><a href="#">Computer Engineer</a></li>
-                                <li><a href="#">Network Technology</a></li>
-                                <li><a href="#">Software Engineer</a></li>
-                                <li><a href="#">Management Information Systems</a></li>
-                                <li><a href="#">Big Data & Machine Learning</a></li>
-                                <li>
-                                    <a href="#">Data Communication and Computer Network</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a class="category" href="#">Business Administration</a>
-                            <ul class="submenu">
-                                <li><a href="#">Digital Marketing</a></li>
-                                <li><a href="#">International Bussiness</a></li>
-                                <li><a href="#">Hotel Management</a></li>
-                                <li>
-                                    <a href="#">Management Of Tourism and Travel Services</a>
-                                </li>
-                                <li><a href="#">Multimedia Management</a></li>
-                                <li><a href="#">Finance</a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a class="category" href="#">Graphic & Digital Design</a>
-                            <ul class="submenu">
-                                <li><a href="#">Brand Identity Design</a></li>
-                                <li><a href="#">Marketing Advertising Design</a></li>
-                                <li><a href="#">Design UI/UX Interface</a></li>
-                                <li><a href="#">Design Publications and Magazines</a></li>
-                                <li>
-                                    <a href="#">Motion Graphic Design - Motion Graphics</a>
-                                </li>
-                                <li>
-                                    <a href="#">Art Illustration Design - Illustration Design</a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </nav>
             </section>
         </header>
         <main class="container">
@@ -140,7 +103,7 @@
                 <div class="line"></div>
             </div>
             <div class="search_form">
-                <form>
+                <form asp-controller="" asp-action="Search">
                     <input class="search_input"
                            type="text"
                            name="search"
@@ -148,144 +111,33 @@
                 </form>
             </div>
             <div class="result">
-                <a href="detail.html">
-                    <div class="article_items">
-                        <img src="../asset/img/1.jpg" alt="" />
-                        <div class="content">
-                            <h3 class="title_acticle">
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                                Delectus, quia?
-                            </h3>
-                            <p class="description">
-                                Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                                Nihil a molestias veritatis vel ut. Debitis fugit modi
-                                perferendis suscipit reprehenderit? Debitis fugit modi
-                                perferendis suscipit reprehenderit?
-                            </p>
-                            <p class="time_author">
-                                <span>06-03-2024</span> | <span>Lorem, ipsum dolor</span>
-                            </p>
-                            <button class="read_post">
-                                <a href="detail.html">Read</a>
-                            </button>
+                @foreach (var item in Model)
+                {
+                    <a href="detail.html">
+                        <div class="article_items">
+                            <img src="/Uploads/@Html.DisplayFor(modelItem => item.MagazineCover)" alt="" />
+                            <div class="content">
+                                <h3 class="title_acticle">
+                                    @Html.DisplayFor(modelItem => item.Title)
+                                </h3>
+                                <p class="description">
+                                    @Html.DisplayFor(modelItem => item.Description)
+
+                                </p>
+                                <p class="time_author">
+                                    <span>@Html.DisplayFor(modelItem => item.ArticleDate)</span> | <span>@Html.DisplayFor(modelItem => item.Author.Name)</span>
+                                </p>
+                                <button class="read_post"><a href="@Url.Action("Detail", "Home", new { id = item.ArticleId })">Read</a></button>
+                            </div>
                         </div>
+                    </a>
+                }
+                @if (!Model.Any())
+                {
+                    <div class="Center text-center fs-3 pt-3 text-danger fw-bold">
+                        <strong>Not Things Else</strong>
                     </div>
-                </a>
-                <a href="detail.html">
-                    <div class="article_items">
-                        <img src="../asset/img/2.jpg" alt="" />
-                        <div class="content">
-                            <h3 class="title_acticle">
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                                Delectus, quia?
-                            </h3>
-                            <p class="description">
-                                Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                                Nihil a molestias veritatis vel ut. Debitis fugit modi
-                                perferendis suscipit reprehenderit? Debitis fugit modi
-                                perferendis suscipit reprehenderit?
-                            </p>
-                            <p class="time_author">
-                                <span>06-03-2024</span> | <span>Lorem, ipsum dolor</span>
-                            </p>
-                            <button class="read_post">
-                                <a href="detail.html">Read</a>
-                            </button>
-                        </div>
-                    </div>
-                </a>
-                <a href="detail.html">
-                    <div class="article_items">
-                        <img src="../asset/img/3.jpg" alt="" />
-                        <div class="content">
-                            <h3 class="title_acticle">
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                                Delectus, quia?
-                            </h3>
-                            <p class="description">
-                                Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                                Nihil a molestias veritatis vel ut. Debitis fugit modi
-                                perferendis suscipit reprehenderit? Debitis fugit modi
-                                perferendis suscipit reprehenderit?
-                            </p>
-                            <p class="time_author">
-                                <span>06-03-2024</span> | <span>Lorem, ipsum dolor</span>
-                            </p>
-                            <button class="read_post">
-                                <a href="detail.html">Read</a>
-                            </button>
-                        </div>
-                    </div>
-                </a>
-                <a href="detail.html">
-                    <div class="article_items">
-                        <img src="../asset/img/B1-1.jpg" alt="" />
-                        <div class="content">
-                            <h3 class="title_acticle">
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                                Delectus, quia?
-                            </h3>
-                            <p class="description">
-                                Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                                Nihil a molestias veritatis vel ut. Debitis fugit modi
-                                perferendis suscipit reprehenderit? Debitis fugit modi
-                                perferendis suscipit reprehenderit?
-                            </p>
-                            <p class="time_author">
-                                <span>06-03-2024</span> | <span>Lorem, ipsum dolor</span>
-                            </p>
-                            <button class="read_post">
-                                <a href="detail.html">Read</a>
-                            </button>
-                        </div>
-                    </div>
-                </a>
-                <a href="detail.html">
-                    <div class="article_items">
-                        <img src="../asset/img/B1-2.jpg" alt="" />
-                        <div class="content">
-                            <h3 class="title_acticle">
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                                Delectus, quia?
-                            </h3>
-                            <p class="description">
-                                Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                                Nihil a molestias veritatis vel ut. Debitis fugit modi
-                                perferendis suscipit reprehenderit? Debitis fugit modi
-                                perferendis suscipit reprehenderit?
-                            </p>
-                            <p class="time_author">
-                                <span>06-03-2024</span> | <span>Lorem, ipsum dolor</span>
-                            </p>
-                            <button class="read_post">
-                                <a href="detail.html">Read</a>
-                            </button>
-                        </div>
-                    </div>
-                </a>
-                <a href="detail.html">
-                    <div class="article_items">
-                        <img src="../asset/img/B1.jpg" alt="" />
-                        <div class="content">
-                            <h3 class="title_acticle">
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                                Delectus, quia?
-                            </h3>
-                            <p class="description">
-                                Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                                Nihil a molestias veritatis vel ut. Debitis fugit modi
-                                perferendis suscipit reprehenderit? Debitis fugit modi
-                                perferendis suscipit reprehenderit?
-                            </p>
-                            <p class="time_author">
-                                <span>06-03-2024</span> | <span>Lorem, ipsum dolor</span>
-                            </p>
-                            <button class="read_post">
-                                <a href="detail.html">Read</a>
-                            </button>
-                        </div>
-                    </div>
-                </a>
+                }
             </div>
         </main>
     </section>

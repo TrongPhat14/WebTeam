@@ -180,7 +180,7 @@ header {
     flex: 1;
     text-align: center;
     align-items: center;
-    left: 20%;
+    left: 0%;
     position: relative;
 }
 
@@ -240,21 +240,31 @@ header {
             align-items: center;
         }
 
+        .right .dropdown ul li .dropdown-test {
+            padding-bottom: 20px;
+        }
+
+        .right .dropdown ul li button {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 15 px;
+        }
+
 .right .dropdown a i {
     top: 5%;
 }
 
-.right a:hover {
+.right .dropdown a:hover {
     background: #dde9d5;
     color: #363f30;
 }
 
-.right a i {
-    position: relative;
-    top: 12%;
-    right: 0;
-    transform: translate(0%, 11%);
+.right .dropdown .dropdown-test:hover {
+    background: #dde9d5;
+    color: #363f30;
 }
+
+
 
 /* Navbar */
 .hero {
@@ -406,10 +416,10 @@ header {
             .slider .list .item .hot_news_introduction {
                 /* margin-left: 100px; */
                 width: 500px;
-                padding-right: 60px;
+                padding-right: 6%;
                 position: relative;
                 top: 25%;
-                width: 30%;
+                width: 35%;
                 height: 100%;
             }
 
@@ -427,14 +437,14 @@ header {
 
                 .slider .list .item .hot_news_introduction p {
                     display: block;
-                    font-size: 30px;
+                    font-size: 25px;
                     font-weight: bold;
                     cursor: pointer;
                 }
 
                 .slider .list .item .hot_news_introduction span {
                     display: block;
-                    font-size: 20px;
+                    font-size: 18px;
                     margin: 40px 0;
                 }
 
@@ -460,7 +470,7 @@ header {
     .slider .buttons {
         position: absolute;
         top: 45%;
-        left: 7%;
+        left: 6%;
         width: 90%;
         display: flex;
         justify-content: space-between;
@@ -694,7 +704,7 @@ header {
 
 .post_item {
     display: flex;
-    width: 680px;
+    width: 48%;
     height: 265px;
     border-radius: 3px;
     background: #eae0cd40;
@@ -702,7 +712,7 @@ header {
     margin-top: 25px;
     transform: translateX(0);
     transition: all 0.5s;
-    margin-right: 20px;
+    margin-right: 28px;
 }
 
     .post_item:hover {
@@ -748,7 +758,7 @@ header {
         background: none;
         width: 50px;
         position: relative;
-        left: 80%;
+        left: 75%;
         font-size: 18px;
         background: #87948738;
         width: 87px;
@@ -768,13 +778,12 @@ header {
     max-height: 2500px;
     /* margin-top: 50px; */
     padding: 30px 55px;
-    /* margin-bottom: 100px; */
 }
 
 .category_container .title_container {
     border-bottom: 3px solid #000;
     border-radius: 3px;
-    width: 1400px;
+    width: 100%;
     box-shadow: 0 5px 0 #aaaaaa;
 }
 
@@ -784,16 +793,21 @@ header {
     }
 
     .category_container .title_container .subcategory {
-        width: 1100px;
+        width: 80%;
         max-width: 1200px;
         margin-bottom: 7px;
+        margin-right: 10px;
         font-size: 18px;
         justify-content: space-between;
         transition: all 0.8s ease;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
         .category_container .title_container .subcategory li {
-            width: 1100px;
+            width: 20%;
+            margin-right: 10px;
         }
 
             .category_container .title_container .subcategory li:hover {
@@ -1168,15 +1182,23 @@ footer {
     margin-bottom: 30px;
     height: 260px;
 }
-/* Đảm bảo nội dung của modal có kích thước phù hợp và cuộn được nếu cần */
-#docxModal .modal-body {
-    max-height: calc(100vh - 200px);
-    overflow-y: auto;
+
+.liked {
+    color: red;
 }
 
-/* Thay đổi kiểu chữ và cỡ chữ của nội dung */
-#docxContent {
-    font-family: Arial, sans-serif;
-    font-size: 14px;
-    line-height: 1.6;
+a.backToHome {
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    background: none;
+    background: #363f304d;
+    width: 150px;
+    height: 55px;
+    color: #363f30;
+    font-size: 16px;
+    font-weight: 600;
+    float: right;
+    transform: translateX(0);
+    transition: 0.7s;
 }

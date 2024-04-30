@@ -7,7 +7,7 @@
 
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Student Index";
     Layout = null;
     var loggedInUserId = UserManager.GetUserId(User);
     var loggedInUser = await UserManager.FindByIdAsync(loggedInUserId);
@@ -36,22 +36,42 @@
     <link rel="stylesheet" href="~/asset/css/responsive.css">
     <title>Magazine of University</title>
 </head>
+<script>
+    // Hàm ẩn thông báo sau 2 giây
+    function hideAlert() {
+        setTimeout(function () {
+            $("#successAlert").fadeOut("slow", function () {
+                $(this).remove();
+            });
+        }, 2000);
+    }
+
+    // Gọi hàm ẩn thông báo khi tài liệu đã sẵn sàng
+    $(document).ready(function () {
+        hideAlert();
+    });
+</script>
 <body>
     <section class="article_submission">
         <header>
             <section class="header_logo container">
                 <div class="left">
-                    <a class="home_icon" href="index.html">
+                    <a class="home_icon" asp-controller="" asp-action="Index">
                         <i class="fa-solid fa-house"></i>
                     </a>
                     <div class="container_search">
                         <div class="icon_search">
                             <i class="search fa-solid fa-magnifying-glass"></i>
                         </div>
-                        <div class="input_search">
-                            <input type="text" placeholder="search" id="search" />
-                            <i class="clear fa fa-times"></i>
-                        </div>
+                        <form asp-controller="" asp-action="Search">
+                            <div class="input_search">
+
+                                <input type="text" name="Search"
+                                       placeholder="search">
+                                <i class="clear fa fa-times"></i>
+
+                            </div>
+                        </form>
                     </div>
                     <a class="search_mobile" href="search.html">
                         <i class="fa-solid fa-magnifying-glass"></i>
@@ -61,10 +81,9 @@
                     </a>
                 </div>
                 <div class="brand_name">
-                    <a href="index.html">Magazine of University</a>
+                    <a asp-controller="" asp-action="Index">Magazine of University</a>
                 </div>
                 <div class="right">
-                    <button><i class="fa-solid fa-bell"></i></button>
                     <div class="dropdown">
                         <a class="btn dropdown_icon dropdown-toggle"
                            href="#"
@@ -73,115 +92,49 @@
                            data-bs-toggle="dropdown"
                            aria-expanded="false">
                             <i class="fa-solid fa-user"></i>
+                            <span class="ms-2 fs-6 fw-bold text-uppercase text-center">@User.Identity?.Name</span>
                         </a>
 
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">Profile</a></li>
                             <li>
-                                <a class="dropdown-item" href="profile.html">Profile</a>
+                                <form class="dropdown-test dropdown-item" style="
+                                        display: flex;
+                                        font-size: 18px;
+                                        font-weight: 600;
+                                        height: 100%;
+                                        align-items: center;"
+                                      asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                                    <button type="submit" style="background: none">Logout</button>
+                                </form>
                             </li>
-                            <li>
-                                <a class="dropdown-item" href="submission.html">Submission</a>
-                            </li>
-                            <li><a class="dropdown-item" href="#">Recently seen</a></li>
-                            <li><a class="dropdown-item" href="#">Logout</a></li>
                         </ul>
                     </div>
                 </div>
-            </section>
-            <section class="hero">
-                <nav>
-                    <ul>
-                        <li>
-                            <a class="category" href="#">Information Technology</a>
-                            <ul class="submenu">
-                                <li><a href="#">Computer Science</a></li>
-                                <li><a href="#">Information Technology</a></li>
-                                <li><a href="#">Computer Engineer</a></li>
-                                <li><a href="#">Network Technology</a></li>
-                                <li><a href="#">Software Engineer</a></li>
-                                <li><a href="#">Management Information Systems</a></li>
-                                <li><a href="#">Big Data & Machine Learning</a></li>
-                                <li>
-                                    <a href="#">Data Communication and Computer Network</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a class="category" href="#">Business Administration</a>
-                            <ul class="submenu">
-                                <li><a href="#">Digital Marketing</a></li>
-                                <li><a href="#">International Bussiness</a></li>
-                                <li><a href="#">Hotel Management</a></li>
-                                <li>
-                                    <a href="#">Management Of Tourism and Travel Services</a>
-                                </li>
-                                <li><a href="#">Multimedia Management</a></li>
-                                <li><a href="#">Finance</a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a class="category" href="#">Graphic & Digital Design</a>
-                            <ul class="submenu">
-                                <li><a href="#">Brand Identity Design</a></li>
-                                <li><a href="#">Marketing Advertising Design</a></li>
-                                <li><a href="#">Design UI/UX Interface</a></li>
-                                <li><a href="#">Design Publications and Magazines</a></li>
-                                <li>
-                                    <a href="#">Motion Graphic Design - Motion Graphics</a>
-                                </li>
-                                <li>
-                                    <a href="#">Art Illustration Design - Illustration Design</a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </nav>
             </section>
         </header>
 
         <main class="container">
             <div class="top_page">
                 <p>HOME</p> <span></span>
-                <p>INFORMATION TECHNOLOGY</p> <span></span>
+                <p>@ViewBag.Semester.Faculty.FacultyName</p> <span></span>
                 <p title="INFORMATION TECHNOLOGY">@ViewBag.Semester.SemesterName</p>
+                <div class="text-center">
+                    @if (TempData["UpdateMes2"] != null)
+                    {
+                        <div id="successAlert" class="alert alert-success" role="alert">
+                            @TempData["UpdateMes2"]
+                        </div>
+                    }
+                </div>
             </div>
             <section class="announcements">
                 <h3 class="title_announce">
                     ANNOUNCEMENTS
                 </h3>
                 <div class="content_announcements">
-                    <p>
-                        Dear Students, <br>
-                        We would like to inform you about the subject and deadline for the self-selected paper within the field of information technology.
-                    </p>
                     <p class="deadline">
-                        <strong>Deadline:</strong> [Date/Month/Year], 11:59 PM <br>
-                        Please ensure that you have completed and submitted your paper before the deadline. The system will automatically close at 11:59 PM and no submissions will be accepted thereafter. To avoid inconvenience, kindly adhere to the submission deadline.
-                    </p>
-                    <p class="requirment">
-                        <strong>Essay Requirements:</strong> <br>
-                        <span>Choose one of the following topics in the field of information technology:</span>
-                        <ol>
-                            <li class="list_requirment">Machine Learning and AI</li>
-                            <li class="list_requirment">Cybersecurity and Network Security</li>
-                            <li class="list_requirment">Cloud Computing and Big Data</li>
-                            <li class="list_requirment">Software Engineering and Development</li>
-                            <li class="list_requirment">Mobile Application Development</li>
-                            <li class="list_requirment">Internet of Things (IoT) and Embedded Systems</li>
-                        </ol>
-                    </p>
-                    <p class="notes">
-                        <strong>Important Notes:</strong>
-                        <ol>
-                            <li class="list_notes">Please submit your paper in PDF or .DOC format. Any submissions not following this format will not be accepted.</li>
-                            <li class="list_notes">Ensure that your file name is clear and understandable.</li>
-                            <li class="list_notes">The system will automatically close <strong>at 11:59 PM on [Date/Month/Year]</strong>. Please adhere to the submission deadline to avoid any warnings.</li>
-                        </ol>
-                    </p>
-                    <p>
-                        We wish you success in completing your paper. We look forward to receiving excellent submissions from you. <br>
-                        Best Regards, <br>
-                        [Name of Coordinator]
+                        @ViewBag.Semester.Notification
                     </p>
                 </div>
             </section>
@@ -193,13 +146,21 @@
                     </h3>
                     <div class="date_submission">
                         <i class="fa-solid fa-file"></i>
-                        <span>Due to 16 April 2024</span>
+                        <span>Due to @ViewBag.Semester.Dl1</span>
                     </div>
                     <div class="link_add_submission">
-                    <a asp-action="Create" asp-route-semesterId="@ViewBag.Semester.SemesterID">
-                            <i class="fa-solid fa-circle-plus"></i>
-                            <span>Add Submissions</span>
-                        </a>
+                        @if ((bool)ViewData["IsPastDl1"])
+                        {
+                            <p>Deadline 1 has exceeded the day limit.</p>
+                        }
+                        else
+                        {
+                            <a asp-action="Create" asp-route-semesterId="@ViewBag.Semester.SemesterID">
+                                <i class="fa-solid fa-circle-plus"></i>
+                                <span>Add Submissions</span>
+                            </a>
+                        }
+
                     </div>
 
                 </div>
@@ -210,13 +171,21 @@
                     </h3>
                     <div class="date_submission">
                         <i class="fa-solid fa-file"></i>
-                        <span>Due to 25 April 2024</span>
+                        <span>Due to @ViewBag.Semester.DL2</span>
                     </div>
                     <div class="link_add_submission">
-                        <a asp-action="Create" asp-route-semesterId="@ViewBag.Semester.SemesterID">
-                            <i class="fa-solid fa-circle-plus"></i>
-                            <span>Add Submissions</span>
-                        </a>
+                        @if ((bool)ViewData["IsPastDl2"])
+                        {
+                            <p>Deadline 2 has exceeded the day limit.</p>
+                        }
+                        else
+                        {
+                            <a asp-action="Create" asp-route-semesterId="@ViewBag.Semester.SemesterID">
+                                <i class="fa-solid fa-circle-plus"></i>
+                                <span>Add Submissions</span>
+                            </a>
+                        }
+
                     </div>
                 </div>
             </section>
@@ -230,35 +199,73 @@
                         // Kiểm tra xem bài viết thuộc về người dùng đang đăng nhập và trong kỳ học đang chọn
                         if (article.AuthorID == loggedInUserId && article.SemesterId == ViewBag.Semester.SemesterID)
                         {
-                                    <a href="#">
-                                        <div class="item_submitted">
-                                        <div class="info_submitted">
-                                            <p class="title_item">
-                                                Submission's name: @Html.DisplayFor(modelitem => article.Title)
-                                            </p>
-                                            <div class="info_status">
+                            <a href="#">
+                                <div class="item_submitted">
+                                    <div class="info_submitted">
+                                        <p class="title_item">
+                                            Submission's name: @Html.DisplayFor(modelitem => article.Title)
+                                        </p>
+                                        <div class="info_status">
+                                            @if (article.Faculty != null)
+                                            {
                                                 <p><strong>@Html.DisplayFor(modelitem => article.Faculty.FacultyName)</strong> - <strong>@Html.DisplayFor(modelitem => article.Category.CategoryName)</strong> - <strong>@Html.DisplayFor(modelitem => article.Author.Name)</strong></p>
-                                                @if(article.Isbool != true){
-                                                    <span>Pending</span>
-                                                }
-                                                else
-                                                {
-                                                    <span>Clear</span>
-                                                }
+                                            }
+                                            else
+                                            {
+                                                <p>Faculty information not available</p>
+                                            }
 
-                                            </div>
-                                        </div>
-                                        <div class="btn_submitted">
-                                            <button class="btn_edit" type="button"><i class="fa-solid fa-pen-to-square"></i></button>
-                                            <button class="btn_comment" type="button">
-                                                <i class="fa-solid fa-comment"></i>
-                                                <span class="comment-count">0</span>
-                                            </button>
+                                            @if (article.boolIs == true && article.Isbool == false)
+                                            {
+                                                <span style="color: red">Reject</span>
+                                                
+                                            }
+                                            else if (article.Isbool == true && article.boolIs == false)
+                                            {
+                                                <span style="color: blue">Approved</span>
+                                            }
+                                            else 
+                                            {
+                                                <span>Pending</span>
+
+                                            }
+
                                         </div>
                                     </div>
-                                </a>
-                                }
-                            }
+                                    <div class="btn_submitted">
+                                        @if (article.Isbool == true ) // Chỉ hiển thị các chức năng nếu bài viết không ở trạng thái "Clear"
+                                        {
+           
+                                            <a class="download_btn" href="@Url.Action("Download", "Student", new { id = article.ArticleId })">
+                                                <i class="fa-solid fa-download"></i>
+                                            </a>
+                                        }
+                                        else if( article.boolIs == true){
+                                            <a class="download_btn" href="@Url.Action("Download", "Student", new { id = article.ArticleId })">
+                                                <i class="fa-solid fa-download"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {                                        
+                                            @if (article.IsCheckMes == true)
+                                            {
+                                                <a asp-action="Edit" asp-route-id="@article.ArticleId" class="btn_comment">
+                                                    <i class="fa-solid fa-comment"></i>
+                                                    <span class="comment-count"></span>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a asp-action="Edit" asp-route-id="@article.ArticleId" class="btn_edit">
+                                                    <i class="fa-solid fa-comment"></i>
+                                                </a>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </a>
+                        }
+                    }
                 </div>
                 <div class="pagination">
                     @Html.PagedListPager(Model, page => Url.Action("Details", new { id = ViewBag.Semester.SemesterID, page }), new PagedListRenderOptions { LiElementClasses = new[] { "page-item" }, PageClasses = new[] { "page-link" } })
@@ -321,38 +328,5 @@
     <!-- Main -->
     <script src="~/asset/js/main.js"></script>
     <script src="~/asset/js/more.js"></script>
-    <script>
-        // Show more comment
-        document.addEventListener('DOMContentLoaded', function () {
-            const showMoreButton = document.getElementById('view_all_btn');
-            const submitted = document.querySelectorAll('.item_submitted');
-            const submittedPerPage = 2;
-            let visiblesubmitted = submittedPerPage;
-
-            // Hide all submitted except the first `visiblesubmitted`
-            for (let i = 0; i < submitted.length; i++) {
-                if (i >= visiblesubmitted) {
-                    submitted[i].style.display = 'none';
-                }
-            }
-
-            // Add event listener to show more button
-            showMoreButton.addEventListener('click', function () {
-                visiblesubmitted += submittedPerPage;
-
-                // Show next `submittedPerPage` submitted
-                for (let i = 0; i < submitted.length; i++) {
-                    if (i < visiblesubmitted) {
-                        submitted[i].style.display = 'block';
-                    }
-                }
-
-                // Hide "Show More submitted" button if all submitted are visible
-                if (visiblesubmitted >= submitted.length) {
-                    showMoreButton.style.display = 'none';
-                }
-            });
-        });
-    </script>
 </body>
 </html>

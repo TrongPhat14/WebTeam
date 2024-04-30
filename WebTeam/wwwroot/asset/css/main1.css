@@ -345,7 +345,7 @@
 
     .category_filter i {
         position: relative;
-        left: 50%;
+        left: 15%;
         top: 10%;
     }
 
@@ -361,9 +361,18 @@
 a.title_submenu {
     line-height: 45px;
     font-size: 18px;
+    width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.title_submenu p {
+    width: 150px;
 }
 
 .title_submenu i {
+    margin-top: 16px;
     font-size: 15px;
     transition: transform 0.5s;
 }
@@ -380,6 +389,11 @@ a.title_submenu {
 
 .show {
     display: block;
+}
+
+.show-sort {
+    display: block;
+    width: 10%;
 }
 
 .newest_post_filter {
@@ -456,7 +470,7 @@ a.title_submenu {
 }
 
 .article_items {
-    width: 505px;
+    width: 48%;
     height: 300px;
     display: flex;
     margin: 30px 0 20px 10px;
@@ -1091,10 +1105,17 @@ form input[type="file"] {
     display: flex;
 }
 
+    .info_status p {
+        min-width: 600px;
+        max-width: 600px;
+    }
+
     .info_status span {
+        width: 200px;
         color: #ff8730;
         font-weight: 600;
         text-transform: uppercase;
+        text-align: end;
     }
 
 .item_submitted {
@@ -1126,19 +1147,19 @@ form input[type="file"] {
     float: right;
 }
 
-    .btn_submitted button {
+    .btn_submitted a {
         border: none;
         outline: none;
         background: none;
         font-size: 30px;
-        margin-right: 20px;
+        margin-right: 35px;
         color: #363f30cc;
         transition: color 0.5s;
     }
 
-        .btn_submitted button:hover {
-            color: #000;
-        }
+    .btn_submitted button:hover {
+        color: #000;
+    }
 
 /* Add Submissions */
 .add_submission_conatiner {
@@ -1182,6 +1203,7 @@ form input[type="file"] {
     .submission_title p {
         font-size: 20px;
         font-weight: 600;
+        width: 60%;
     }
 
     .attachment input,

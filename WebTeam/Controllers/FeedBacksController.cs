@@ -12,32 +12,158 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebTeam.Data;
 using X.PagedList;
+using Microsoft.AspNetCore.Identity;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Authorization;
+using WebTeam.Constants;
 
 namespace WebTeam.Controllers
 {
+    [Authorize(Roles = "Marketing_Coordinator")]
+
     public class FeedBacksController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public FeedBacksController(ApplicationDbContext context)
+
+        public FeedBacksController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: FeedBacks
-        public async Task<IActionResult> Index(int? page)
+        public async Task<IActionResult>Index(int? page)
         {
+            var currentStudent = await _userManager.GetUserAsync(User);
             int pageNumber = page ?? 1;
             int pageSize = 10; // Số lượng mục trên mỗi trang
             if (_context != null && _context.FeedBacks != null)
             {
                 var feedbacks = await _context.FeedBacks
-                                               .Include(f => f.Article)
-                                                   .ThenInclude(a => a.Author)
-                                               .Include(f => f.Marketing_coordinator)
-                                               .ToPagedListAsync(pageNumber, pageSize);
+                .Include(f => f.Article)
+                .ThenInclude(a => a.Author)
+                .Include(f => f.Article)
+                .ThenInclude(a => a.Faculty)
+                .OrderByDescending(a => a.FeedBackID)
+                .Include(f => f.Marketing_coordinator)
+                .Where(a => a.Article.FacultyId == currentStudent.FacultyId && a.Article.Isbool == false && a.Article.boolIs == false)
 
-                return View(feedbacks);
+                .ToListAsync();
+
+                var pagedArticles = feedbacks.ToPagedList(pageNumber, pageSize);
+
+                return View(pagedArticles);
+            }
+            else
+            {
+                // Xử lý trường hợp khi _context hoặc _context.FeedBacks là null
+                return View(new List<FeedBack>
+                    ());
+            }
+        }
+        
+        public async Task<IActionResult> DashboardAsync(int? page, string semesterName)
+        {
+            // Lấy thông tin về người dùng và vai trò của họ
+            var user = await _userManager.GetUserAsync(User);
+            var roles = await _userManager.GetRolesAsync(user);
+
+
+            // Lấy thông tin về khoa của người dùng
+            var userFacultyId = user.FacultyId;
+
+            // Lấy danh sách tất cả các kì từ cơ sở dữ liệu
+            var allSemesters = _context.Semesters.Include(s => s.Faculty).ToList();
+
+            // Lọc ra các kì có cùng khoa với người dùng
+            var semestersWithUserFaculty = allSemesters.Where(s => s.FacultyID == userFacultyId).ToList();
+
+            ViewData["semestersWithUserFaculty"] = semestersWithUserFaculty;
+
+            // Lấy query feedbacks từ database
+            var query = _context.Articles
+                .Include(a => a.Author)
+                .Include(a => a.Faculty)
+                .Include(a => a.Category)
+                .Include(a => a.Semester)
+                .Where(a => semestersWithUserFaculty.Select(s => s.SemesterName).Contains(a.Semester.SemesterName));
+
+            // Lọc theo semesterName nếu được chỉ định
+            if (!string.IsNullOrEmpty(semesterName))
+            {
+                query = query.Where(a => a.Semester.SemesterName == semesterName);
+            }
+
+            // Thực hiện phân trang
+            var pageNumber = page ?? 1; // Số trang mặc định
+            var pageSize = 10; // Số lượng mục trên mỗi trang
+            var pagedFeedbacks = await query.ToPagedListAsync(pageNumber, pageSize);
+            ViewData["semesterName"] = semesterName;
+            return View(pagedFeedbacks);
+        }
+
+
+        public async Task<IActionResult> Chart2Data()
+        {
+            // Lấy thông tin người dùng hiện tại
+            var currentUser = await _userManager.GetUserAsync(User);
+            // Lấy số ID của khoa của người dùng hiện tại
+            var userFacultyId = currentUser.FacultyId;
+
+            // Đếm số lượng bài báo theo từng trạng thái có cùng khoa với người dùng hiện tại
+            var pendingCount = await _context.Articles
+                .Where(article => article.Isbool != true && article.FacultyId == userFacultyId && article.boolIs != true)
+                .CountAsync();
+
+            var approvedCount = await _context.Articles
+                .Where(article => article.Isbool == true && article.FacultyId == userFacultyId)
+                .CountAsync();
+
+            var deniedCount = await _context.Articles
+                .Where(article => article.boolIs == true && article.FacultyId == userFacultyId)
+                .CountAsync();
+
+            // Tạo một dictionary để chứa dữ liệu cho biểu đồ
+            var data = new Dictionary<string, int>
+            {
+                { "Pending", pendingCount },
+                { "Approved", approvedCount },
+                { "Denied", deniedCount }
+            };
+
+            // Trả về dữ liệu dưới dạng JSON
+            return Json(data);
+        }
+        public async Task<IActionResult> Approved(int? page)
+        {
+            var currentStudent = await _userManager.GetUserAsync(User);
+            int pageNumber = page ?? 1;
+            int pageSize = 10; // Số lượng mục trên mỗi trang
+            if (_context != null && _context.Articles != null)
+            {
+/*                var feedbacks = await _context.FeedBacks
+                    .Include(f => f.Article)
+                    .ThenInclude(a => a.Author)
+                    .Include(f => f.Article)
+                    .ThenInclude(a => a.Faculty)
+                    .Include(f => f.Marketing_coordinator)
+                    .Where(a => a.Article.FacultyId == currentStudent.FacultyId && a.Article.Isbool)// Filter trạng thái approved
+                    .OrderByDescending(a => a.ArticleId)
+                    .ToListAsync();*/
+                var article = await _context.Articles
+                    .Include(a => a.Author)
+                    .Include(a => a.Faculty)
+                    .Include(a => a.FeedBacks)
+                                .ThenInclude(f => f.Marketing_coordinator)
+                    .Where(a => a.FacultyId == currentStudent.FacultyId && a.Isbool == true)// Filter trạng thái approved
+                    .OrderByDescending(a => a.ArticleDate)
+                    .ToListAsync();
+                var pagedArticles = article.ToPagedList(pageNumber, pageSize);
+
+                return View(pagedArticles);
             }
             else
             {
@@ -45,63 +171,224 @@ namespace WebTeam.Controllers
                 return View(new List<FeedBack>());
             }
         }
-        public IActionResult Profile()
+        public async Task<IActionResult> Reject(int? page)
         {
-            return View();
+            var currentStudent = await _userManager.GetUserAsync(User);
+            int pageNumber = page ?? 1;
+            int pageSize = 10; // Số lượng mục trên mỗi trang
+            if (_context != null && _context.FeedBacks != null)
+            {
+/*                var feedbacks = await _context.FeedBacks
+                    .Include(f => f.Article)
+                    .ThenInclude(a => a.Author)
+                    .Include(f => f.Article)
+                    .ThenInclude(a => a.Faculty)
+                    .Include(f => f.Marketing_coordinator)
+                    .Where(a => a.Article.FacultyId == currentStudent.FacultyId && a.Article.boolIs)// Filter trạng thái approved
+                    .OrderByDescending(a => a.)
+                    .ToListAsync();*/
+                var article = await _context.Articles
+                        .Include(a => a.Author)
+                        .Include(a => a.Faculty)
+                        .Include(a => a.FeedBacks)
+                                    .ThenInclude(f => f.Marketing_coordinator)
+                        .Where(a => a.FacultyId == currentStudent.FacultyId && a.boolIs == true)// Filter trạng thái approved
+                        .OrderByDescending(a => a.ArticleDate)
+                        .ToListAsync();
+                var pagedArticles = article.ToPagedList(pageNumber, pageSize);
+
+                return View(pagedArticles);
+            }
+            else
+            {
+                // Xử lý trường hợp khi _context hoặc _context.FeedBacks là null
+                return View(new List<FeedBack>());
+            }
         }
-        public IActionResult Deadline()
+
+        public async Task<IActionResult> Deadline()
         {
-            return View();
+            var semester = _context.Semesters.Include(u => u.AcademicYear)
+                .OrderByDescending(a => a.CreatedDate) ;
+
+            return View(await semester.ToListAsync());
+        }
+        private bool SemesterExists(int id)
+        {
+            return (_context.Semesters?.Any(e => e.SemesterID == id)).GetValueOrDefault();
+        }
+        public IActionResult Download(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var article = _context.Articles.FirstOrDefault(m => m.ArticleId == id);
+            if (article == null)
+            {
+                return NotFound();
+            }
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", article.Content);
+
+            // Kiểm tra định dạng của tệp
+            var fileExtension = Path.GetExtension(filePath);
+            if (fileExtension != ".docx")
+            {
+                return BadRequest("Only .docx files can be downloaded.");
+            }
+
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            return File(fileBytes, "application/octet-stream", article.Content);
         }
         // GET: FeedBacks/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.FeedBacks == null)
+            if (id == null || _context.Semesters == null)
             {
                 return NotFound();
             }
+            var semester = await _context.Semesters.FirstOrDefaultAsync(f => f.SemesterID == id);
 
-            var feedBack = await _context.FeedBacks
-                .Include(f => f.Article)
-                .Include(f => f.Marketing_coordinator)
-                .FirstOrDefaultAsync(m => m.FeedBackID == id);
-            if (feedBack == null)
+            if (semester == null)
             {
                 return NotFound();
             }
-
-            return View(feedBack);
+            return View("~/Views/FeedBacks/Details.cshtml", semester);
         }
-
-        // GET: FeedBacks/Create
-        public IActionResult Create()
+        public async Task<IActionResult> SearchFeedBack(string searchString, int? page, string orderBy)
         {
-            ViewData["ArticleId"] = new SelectList(_context.Articles, "ArticleId", "Title");
-            ViewData["Marketing_coordinatorID"] = new SelectList(_context.Users, "Id", "Name");
-            return View();
-        }
+            ViewBag.SearchString = searchString;
 
-        // POST: FeedBacks/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+            var feedback= _context.FeedBacks.Include(a => a.Article)
+             .ThenInclude(a => a.Author). 
+                AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                feedback = feedback.Where(f => f.Article.Author.Name.Contains(searchString));
+            }
+            switch (orderBy)
+            {
+                case "user_desc":
+                    feedback = feedback.OrderByDescending(a => a.Article.submissionDate);
+                    break;
+
+                default:
+                    feedback = feedback.OrderBy(a => a.Article.submissionDate);
+                    break;
+            }
+
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
+            var searchResult = await feedback.ToPagedListAsync(pageNumber, pageSize);
+
+            return View("Index",searchResult);
+        }
+        public async Task<IActionResult> SearchFeedBackApp(string searchString, int? page, string orderBy)
+        {
+            ViewBag.SearchString = searchString;
+
+            var feedback = _context.Articles.Include(a => a.Author).
+                AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                feedback = feedback.Where(f => f.Author.Name.Contains(searchString));
+            }
+            switch (orderBy)
+            {
+                case "user_desc":
+                    feedback = feedback.OrderByDescending(a => a.submissionDate);
+                    break;
+
+                default:
+                    feedback = feedback.OrderBy(a => a.submissionDate);
+                    break;
+            }
+
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
+            var searchResult = await feedback.ToPagedListAsync(pageNumber, pageSize);
+
+            return View("~/Views/FeedBacks/Approved.cshtml", searchResult);
+        }
+        public async Task<IActionResult> SearchFeedBackRe(string searchString, int? page, string orderBy)
+        {
+            ViewBag.SearchString = searchString;
+
+            var feedback = _context.Articles.Include(a => a.Author).
+                AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                feedback = feedback.Where(f => f.Author.Name.Contains(searchString));
+            }
+            switch (orderBy)
+            {
+                case "user_desc":
+                    feedback = feedback.OrderByDescending(a => a.submissionDate);
+                    break;
+
+                default:
+                    feedback = feedback.OrderBy(a => a.submissionDate);
+                    break;
+            }
+
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
+            var searchResult = await feedback.ToPagedListAsync(pageNumber, pageSize);
+
+            return View("~/Views/FeedBacks/Reject.cshtml", searchResult);
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FeedBackID,Content,SentDate,Marketing_coordinatorID,ArticleId")] FeedBack feedBack)
+        public async Task<IActionResult> Details(int id, [Bind("SemesterID,SemesterName,Notification,CreatedDate,ClosureDate,Dl1,DL2,FacultyID,AcademicYearID")] Semester semester)
         {
-            feedBack.SentDate = DateTime.Now;
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-
-            if (ModelState.IsValid)
+            if (id != semester.SemesterID)
             {
-                _context.Add(feedBack);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            ViewData["ArticleId"] = new SelectList(_context.Articles, "ArticleId", "ArticleId", feedBack.ArticleId);
-            ViewData["Marketing_coordinatorID"] = new SelectList(_context.Users, "Id", "Id", feedBack.Marketing_coordinatorID);
-            return View(feedBack);
+
+            try
+            {
+                if (semester.Dl1 < semester.CreatedDate )
+                {
+                    TempData["ErrorMessage"] = "Create Date must be greater than Deadline1.";
+                    return RedirectToAction(nameof(Details));
+                }
+                else if (semester.DL2 < semester.Dl1)
+                {
+                    TempData["ErrorMessage"] = "Deadline 2 must be greater than Deadline 1.";
+                    return RedirectToAction(nameof(Details));
+                }
+                else if (semester.DL2 > semester.ClosureDate)
+                {
+                    TempData["ErrorMessage"] = "Closure Date must be greater than Deadline 2.";
+                    return RedirectToAction(nameof(Details));
+                }
+
+                _context.Update(semester);
+                await _context.SaveChangesAsync();
+                TempData["EditMessage"] = "Edit successful";
+                return Redirect("/FeedBacks/Deadline");
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!SemesterExists(semester.SemesterID))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            
+            return View(semester);
         }
+
 
         // GET: FeedBacks/Edit/5
 
@@ -132,6 +419,9 @@ namespace WebTeam.Controllers
             // Phân tích tệp DOCX và trả về nội dung HTML
             var htmlContent = await ReadDocxAsHtml(filePath);
             return Content(htmlContent, "text/html");
+            /*            ViewBag.DocxContent = htmlContent;
+                        // Trả về view chứa nội dung của tệp DOCX
+                        return View(article);*/
         }
 
         public async Task<string> ReadDocxAsHtml(string filePath)
@@ -142,7 +432,6 @@ namespace WebTeam.Controllers
             {
                 var body = doc.MainDocumentPart.Document.Body;
                 var paragraphs = body.Elements<DocumentFormat.OpenXml.Wordprocessing.Paragraph>();
-
 
                 htmlContent.Append("<html><body>");
 
@@ -178,8 +467,10 @@ namespace WebTeam.Controllers
                                         // Convert image to base64 string
                                         var base64String = Convert.ToBase64String(byteArray);
 
-                                        // Embed image into HTML
-                                        htmlContent.Append($"<img src=\"data:image/png;base64,{base64String}\" />");
+                                        // Embed image into HTML with max width set to 500px and centered
+                                        htmlContent.Append("<div style=\"text-align: center;\">");
+                                        htmlContent.Append($"<img src=\"data:image/png;base64,{base64String}\" style=\"max-width: 500px;\" />");
+                                        htmlContent.Append("</div>");
                                     }
                                 }
                             }
@@ -266,7 +557,7 @@ namespace WebTeam.Controllers
             {
                 try
                 {
-                    article.ArticleDate = DateTime.Now;
+                    article.ArticleDate = new DateTime(2024, 7, 6);
                     article.Isbool = true;
                     _context.Update(article);
                     await _context.SaveChangesAsync();
@@ -282,6 +573,42 @@ namespace WebTeam.Controllers
                         throw;
                     }
                 }
+                TempData["1"] = "Update Success";
+                return RedirectToAction(nameof(Index));
+            }
+            return View(article);
+        }
+        public async Task<IActionResult> Upload1(int? id)
+        {
+            if (id == null || _context.Articles == null)
+            {
+                return NotFound();
+            }
+            var article = await _context.Articles.FindAsync(id);
+            if (article == null)
+            {
+                return NotFound();
+            }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    article.boolIs = true;
+                    _context.Update(article);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ArticleExists(article.ArticleId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                TempData["1"] = "Reject Success";
                 return RedirectToAction(nameof(Index));
             }
             return View(article);
@@ -296,11 +623,16 @@ namespace WebTeam.Controllers
             {
                 return NotFound();
             }
+
             var feedBack = await _context.FeedBacks
                               .Include(f => f.Article)
+                                     .ThenInclude(f => f.Author)
                               .FirstOrDefaultAsync(f => f.FeedBackID == id);
-/*            var feedBack = await _context.FeedBacks.
-                FindAsync(id);*/
+            /*            var feedBack = await _context.FeedBacks.
+                            FindAsync(id);*/
+
+            feedBack.IsCheckMes = false;
+            await _context.SaveChangesAsync();
             if (feedBack == null)
             {
                 return NotFound();
@@ -311,30 +643,13 @@ namespace WebTeam.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("FeedBackID,Content,SentDate,Marketing_coordinatorID,ArticleId")] FeedBack feedBack)
+        public async Task<IActionResult> Edit(int id, [Bind("FeedBackID,Content,SentDate,Marketing_coordinatorID,ArticleId,IsCheckMes")] FeedBack feedBack)
         {
             if (id != feedBack.FeedBackID)
             {
                 return NotFound();
             }
-             
 
-            /*var article = _context.Articles.FirstOrDefault(a => a.ArticleId == feedBack.ArticleId); // Giả sử có một trường Id trong bảng article, bạn cần thay thế bằng trường tương ứng
-            if (article != null)
-            {
-                if (DateTime.Now.Subtract((DateTime)article.submissionDate).TotalDays > 14) // Giả sử có một trường PublishedDate trong bảng article, bạn cần thay thế bằng trường tương ứng
-                {
-                    // If the article is older than 14 days, return error message or handle as needed
-                    ModelState.AddModelError("", "Feedback cannot be edited as it has exceeded the time limit.");
-                    return View(feedBack);
-                }
-            }
-            else
-            {
-                // Handle the case where the article doesn't exist
-                ModelState.AddModelError("", "Article not found.");
-                return View(feedBack);
-            }*/
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (ModelState.IsValid)
             {
@@ -344,13 +659,23 @@ namespace WebTeam.Controllers
                     // Update the UpdateTime with the current time
                     feedBack.SentDate = DateTime.Now;
                     feedBack.Marketing_coordinatorID = userId;
+                    feedBack.IsCheckMes = false;
                     var currentArticleId = feedBack.ArticleId;
                     var article = _context.Articles.FirstOrDefault(a => a.ArticleId == feedBack.ArticleId);
-                    if (DateTime.Now.Subtract((DateTime)article.submissionDate).TotalDays > 14) // Giả sử có một trường PublishedDate trong bảng article, bạn cần thay thế bằng trường tương ứng
+                    // Lấy thông tin bài viết từ phản hồi
+                    /*                    var article = feedBack.ArticleId;*/
+                    var article2 = await _context.Articles
+                            .Where(a => a.ArticleId == currentArticleId)
+                            .FirstOrDefaultAsync();
+                    article2.IsCheckMes = true;
+/*                    var article2 = await _context.Articles.FindAsync(currentArticleId);*/
+/*                    article2.IsCheckMes = true;*/
+                    if (article != null && article.submissionDate != null && DateTime.Now.Subtract((DateTime)article.submissionDate).TotalDays > 14)
                     {
                         // If the article is older than 14 days, return error message or handle as needed
                         ModelState.AddModelError("", "Feedback cannot be edited as it has exceeded the time limit.");
-                        return View(article);
+                        return View(feedBack);
+
                     }
                     // Update Feedback
                     _context.Update(feedBack);
@@ -359,18 +684,7 @@ namespace WebTeam.Controllers
                     // Restore the original ArticleId
                     feedBack.ArticleId = currentArticleId;
 
-                    // Get the related Submission
-/*                    var article = await _context.Articles.FirstOrDefaultAsync(s => s.ArticleId == feedBack.ArticleId);
-                    if (article != null)
-                    {
-                        // Update CommentSubContent in Submission
-                        article.CommentSubContent = feedBack.Content;
-                        article.LastFeedbackUpdateTime = feedBack.UpdateTime;
-                        _context.Update(article);
-                        await _context.SaveChangesAsync();
-                    }
-*/
-                    // Redirect to Submission Index
+                    
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -383,10 +697,11 @@ namespace WebTeam.Controllers
                         throw;
                     }
                 }
+                TempData["UpdateMes"] = "Update Successfully";
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ArticleId"] = new SelectList(_context.Articles, "ArticleId", "ArticleId", feedBack.ArticleId);
-            ViewData["Marketing_coordinatorID"] = new SelectList(_context.Users, "Id", "Id", feedBack.Marketing_coordinatorID);
+            ViewData["ArticleId"] = new SelectList(_context.Articles, "ArticleId", "Title", feedBack.ArticleId);
+            ViewData["Marketing_coordinatorID"] = new SelectList(_context.Users, "Id", "Name", feedBack.Marketing_coordinatorID);
             return View(feedBack);
         }
 
@@ -424,14 +739,14 @@ namespace WebTeam.Controllers
             {
                 _context.FeedBacks.Remove(feedBack);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool FeedBackExists(int id)
         {
-          return (_context.FeedBacks?.Any(e => e.FeedBackID == id)).GetValueOrDefault();
+            return (_context.FeedBacks?.Any(e => e.FeedBackID == id)).GetValueOrDefault();
         }
     }
 }

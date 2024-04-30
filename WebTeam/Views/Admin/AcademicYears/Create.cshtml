@@ -66,6 +66,13 @@
           rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
           crossorigin="anonymous" />
+
+    <!-- ToastifyJS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+
+
     <!-- link css -->
     <link rel="stylesheet" href="~/asset/css/main.css" />
     <link rel="stylesheet" href="~/asset/css/main1.css" />
@@ -75,21 +82,26 @@
     <title>Magazine of University</title>
 </head>
 <body>
-    <section class="allsubmission">
+    <section class="setdeadline">
         <header>
             <section class="header_logo container">
                 <div class="left">
-                    <a class="home_icon" href="../index.html">
+                    <a class="home_icon" asp-controller="Home" asp-action="">
                         <i class="fa-solid fa-house"></i>
                     </a>
                     <div class="container_search">
                         <div class="icon_search">
                             <i class="search fa-solid fa-magnifying-glass"></i>
                         </div>
-                        <div class="input_search">
-                            <input type="text" placeholder="search" id="search" />
-                            <i class="clear fa fa-times"></i>
-                        </div>
+                        <form asp-controller="" asp-action="Search">
+                            <div class="input_search">
+
+                                <input type="text" name="Search"
+                                       placeholder="search">
+                                <i class="clear fa fa-times"></i>
+
+                            </div>
+                        </form>
                     </div>
                     <a class="search_mobile" href="../search.html">
                         <i class="fa-solid fa-magnifying-glass"></i>
@@ -99,52 +111,41 @@
                     </a>
                 </div>
                 <div class="brand_name">
-                    <a href="../index.html">Magazine of University</a>
+                    <a asp-controller="Home" asp-action="">Magazine of University</a>
                 </div>
                 <div class="right">
-                    <button><i class="fa-solid fa-bell"></i></button>
-                    <div class="dropdown">
-                        <a class="btn dropdown_icon dropdown-toggle"
-                           href="#"
-                           role="button"
-                           id="dropdownMenuLink"
-                           data-bs-toggle="dropdown"
-                           aria-expanded="false">
-                            <i class="fa-solid fa-user"></i>
-                        </a>
-                    </div>
+                    <span class="ms-2 fs-6 fw-bold text-uppercase text-center">@User.Identity?.Name</span>
                 </div>
             </section>
         </header>
+
         <section class="main_content">
             <div class="left_category">
                 <ul>
-                    <li>
-                        <a href="dashboard.html">Dashboard</a>
-                    </li>
                     <li class="active_link">
-                        <a href="academicYear.html">Academic Year</a>
+                        <a asp-area="" asp-action="AcademicYears">Academic Year</a>
                     </li>
                     <li>
-                        <a href="semester.html">Semester</a>
+                        <a asp-area="" asp-action="Semesters">Semester</a>
                     </li>
                     <li>
-                        <a href="faculty.html">Faculty</a>
+                        <a asp-area="" asp-action="Faculties">Faculty</a>
                     </li>
                     <li>
-                        <a href="account.html">Accounts</a>
+                        <a asp-area="" asp-action="Users">Accounts</a>
                     </li>
                     <li>
-                        <a href="categories.html">Categories</a>
+                        <a asp-area="" asp-action="Categories">Categories</a>
                     </li>
                     <li>
-                        <a href="profile.html">Profile</a>
+                        <a asp-area="Identity" asp-page="/Account/Manage/Profile">Profile</a>
                     </li>
-                    <li>
-                        <a href="#">
-                            Log out
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                        </a>
+                    <li class="log_out">
+                        <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+                            <button type="submit" class="btn btn-outline-success btn-lg me-3 ms-3 log_out">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                            </button>
+                        </form>
                     </li>
                 </ul>
             </div>
@@ -158,32 +159,23 @@
                             <i class="fa-solid fa-xmark"></i>
                         </a>
                         <ul>
-                            <li>
-                                <a href="dashboard.html">Dashboard</a>
-                            </li>
                             <li class="active_link">
-                                <a href="academicYear.html">Academic Year</a>
+                                <a asp-area="" asp-action="AcademicYears">Academic Year</a>
                             </li>
                             <li>
-                                <a href="semester.html">Semester</a>
+                                <a asp-area="" asp-action="Semesters">Semester</a>
                             </li>
                             <li>
-                                <a href="faculty.html">Faculty</a>
+                                <a asp-area="" asp-action="Faculties">Faculty</a>
                             </li>
                             <li>
-                                <a href="account.html">Accounts</a>
+                                <a asp-area="" asp-action="Users">Accounts</a>
                             </li>
                             <li>
-                                <a href="categories.html">Categories</a>
+                                <a asp-area="" asp-action="Categories">Categories</a>
                             </li>
                             <li>
-                                <a href="profile.html">Profile</a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    Log out
-                                    <i class="fa-solid fa-right-from-bracket"></i>
-                                </a>
+                                <a asp-area="Identity" asp-page="/Account/Manage/Profile">Profile</a>
                             </li>
                         </ul>
                     </div>
@@ -191,65 +183,97 @@
                 <nav class="subnavigate">
                     <ul>
                         <li>
-                            <a href="academicYear.html">Manage Academic Year</a>
+                            <a asp-action="AcademicYears">Manage Academic Year</a>
                         </li>
                         <li class="active">
-                            <a href="createAcademicYear.html">Create New</a>
+                            <a asp-action="AcademicYearCreate">Create New</a>
                         </li>
                     </ul>
                 </nav>
                 <div id="create_new">
                     <div class="main_information">
                         <h3>Create New Academic Year</h3>
-                        <form asp-action="AcademicYearCreate">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <div class="author_article ps-4">
-                            <p class="d-block p-2 fs-5 text fw-bold">
-                                Academic Year:<br>
-                                <div class="author_name bg-white p-3 mb-2 rounded">
-                                        <input asp-for="AcademicYears"  type="text"
-                                           class="form-control border border-white"
-                                           aria-describedby="addon-wrapping">
+                        @if (!string.IsNullOrEmpty(TempData["ErrorMessage1"] as string))
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                @TempData["ErrorMessage1"]
+                            </div>
+                        }
+                        <form asp-action="AcademicYearCreate" method="post" onsubmit="return validateForm()">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="author_article ps-4">
+                                <p class="d-block p-2 fs-5 text fw-bold">
+                                    Academic Year:<br>
+                                    <div class="author_name bg-white p-3 mb-2 rounded">
+                                        <input asp-for="AcademicYears"
+                                               type="text"
+                                               class="form-control border border-white"
+                                               aria-describedby="addon-wrapping"
+                                               placeholder="Input Academic Name (5-50 characters with no special characters )"
+                                               required
+                                               maxlength="50"
+                                               minlength="5"
+                                               pattern="[A-Za-z0-9\s]*"
+                                               oninvalid="this.setCustomValidity('Please enter the correct requested information')"
+                                               oninput="this.setCustomValidity('')">
                                         <span asp-validation-for="AcademicYears" class="text-danger"></span>
-                                </div>
-                            </p>
-                        </div>
-                        <div class="last_modified ps-4">
-                            <p class="d-block p-2 fs-5 text fw-bold">
-                                Start Date: <br>
-                                <div class="date_time_modified bg-white p-3 mb-2 rounded">
+                                    </div>
+                                </p>
+
+                            </div>
+                            <div class="last_modified ps-4">
+                                <p class="d-block p-2 fs-5 text fw-bold">
+                                    Start Date: <br>
+                                    <div class="date_time_modified bg-white p-3 mb-2 rounded">
                                         <input asp-for="StartDate"
                                                class="form-control border border-white"
-                                           placeholder="MM/DD/YY"
-                                           aria-describedby="addon-wrapping">
+                                               placeholder="MM/DD/YY"
+                                               aria-describedby="addon-wrapping"
+                                               required
+                                               oninvalid="this.setCustomValidity('Please enter Start Date')"
+                                               oninput="this.setCustomValidity('')">
                                         <span asp-validation-for="StartDate" class="text-danger"></span>
-                                </div>
-                            </p>
-                        </div>
-                        <div class="feedback_content ps-4">
-                            <p class="d-block p-2 fs-5 text fw-bold">
-                                Closure Date: <br>
-                                <div class="content_container bg-white p-3 mb-2 rounded">
+                                    </div>
+                                </p>
+                            </div>
+                            <div class="feedback_content ps-4">
+                                <p class="d-block p-2 fs-5 text fw-bold">
+                                    Closure Date: <br>
+                                    <div class="content_container bg-white p-3 mb-2 rounded">
                                         <input asp-for="ClosureDate"
-                                           class="form-control text-break border border-white"
-                                           placeholder="Closure Date"
-                                           aria-describedby="addon-wrapping">
+                                               class="form-control text-break border border-white"
+                                               placeholder="MM/DD/YY"
+                                               aria-describedby="addon-wrapping"
+                                               required
+                                               oninvalid="this.setCustomValidity('Please enter Closure Date')"
+                                               oninput="this.setCustomValidity('')">
                                         <span asp-validation-for="ClosureDate" class="text-danger"></span>
+                                    </div>
+                                </p>
+                            </div>
+                            <form id="saveForm" asp-action="AcademicYearCreate" method="post">
+                                <!-- Các trường dữ liệu khác -->
+                                <div class="btn_group ps-4 mt-5">
+                                    <button type="submit" class="btn btn-outline-success btn-lg me-3">
+                                        <i class="fa-regular fa-floppy-disk"></i> Save
+                                    </button>
+                                    <a asp-action="AcademicYears" type="button" class="btn btn-outline-secondary btn-lg">
+                                        <i class="fa-solid fa-arrow-left"></i> Back
+                                    </a>
                                 </div>
-                            </p>
-                        </div>
-                        <div class="btn_group ps-4 mt-5">
-                            <button type="submit" class="btn btn-outline-success btn-lg me-3">
-                                <i class="fa-regular fa-floppy-disk"></i> Save
-                            </button>
-@*                            <button type="button" class="btn btn-outline-warning btn-lg me-3">
-                                <i class="fa-solid fa-arrow-rotate-left"></i> Reset
-                            </button>*@
-                        </div>
+                            </form>
                         </form>
                     </div>
+
                 </div>
             </div>
+
+
+
+
+
+
+
         </section>
 
         <script src="/asset/js/main.js"></script>
@@ -334,7 +358,39 @@
             if (menuSidebar) {
                 menuSidebar.style.display = "none";
             }
+
+            // Gán sự kiện submit form
+            document.querySelector("form").addEventListener("submit", function (event) {
+                event.preventDefault(); // Ngăn chặn hành động mặc định của form
+
+                // Thực hiện gửi dữ liệu form bằng AJAX
+                var formData = new FormData(this);
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", this.action);
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        // Kiểm tra nếu dữ liệu trả về là thành công
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            // Hiển thị modal thành công
+                            var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                            successModal.show();
+                        } else {
+                            // Xử lý logic khi lưu không thành công (nếu cần)
+                        }
+                    } else {
+                        // Xử lý logic khi có lỗi trong quá trình gửi dữ liệu (nếu cần)
+                    }
+                };
+                xhr.send(formData);
+            });
         });
+        function redirectToIndex() {
+            window.location.href = "/Admin/AcademicYears"; // Thay đổi đường dẫn tương ứng với trang index của bạn
+        }
+    </script>
+    <script>
+
 
         function showSidebar() {
             const menuSidebar = document.querySelector(".menu_sidebar");
@@ -353,6 +409,15 @@
                 menuSidebar.style.display = "none";
             }
         }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Ẩn menu_sidebar khi trang được tải
+            const menuSidebar = document.querySelector(".menu_sidebar");
+            if (menuSidebar) {
+                menuSidebar.style.display = "none";
+            }
+        }
     </script>
+
 </body>
 </html>

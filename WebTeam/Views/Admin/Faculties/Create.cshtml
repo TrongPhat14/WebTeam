@@ -4,34 +4,7 @@
     ViewData["Title"] = "Create";
     Layout = null;
 }
-@*
-<h1>Create</h1>
 
-<h4>Faculty</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="FacultyCreate">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="FacultyName" class="control-label"></label>
-                <input asp-for="FacultyName" class="form-control" />
-                <span asp-validation-for="FacultyName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
-
-<div>
-    <a asp-action="Faculties">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}*@
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -66,21 +39,26 @@
     <title>Magazine of University</title>
 </head>
 <body>
-    <section class="allsubmission">
+    <section class="setdeadline">
         <header>
             <section class="header_logo container">
                 <div class="left">
-                    <a class="home_icon" href="../index.html">
+                    <a class="home_icon" asp-controller="Home" asp-action="">
                         <i class="fa-solid fa-house"></i>
                     </a>
                     <div class="container_search">
                         <div class="icon_search">
                             <i class="search fa-solid fa-magnifying-glass"></i>
                         </div>
-                        <div class="input_search">
-                            <input type="text" placeholder="search" id="search" />
-                            <i class="clear fa fa-times"></i>
-                        </div>
+                        <form asp-controller="" asp-action="Search">
+                            <div class="input_search">
+
+                                <input type="text" name="Search"
+                                       placeholder="search">
+                                <i class="clear fa fa-times"></i>
+
+                            </div>
+                        </form>
                     </div>
                     <a class="search_mobile" href="../search.html">
                         <i class="fa-solid fa-magnifying-glass"></i>
@@ -90,52 +68,41 @@
                     </a>
                 </div>
                 <div class="brand_name">
-                    <a href="../index.html">Magazine of University</a>
+                    <a asp-controller="Home" asp-action="">Magazine of University</a>
                 </div>
                 <div class="right">
-                    <button><i class="fa-solid fa-bell"></i></button>
-                    <div class="dropdown">
-                        <a class="btn dropdown_icon dropdown-toggle"
-                           href="#"
-                           role="button"
-                           id="dropdownMenuLink"
-                           data-bs-toggle="dropdown"
-                           aria-expanded="false">
-                            <i class="fa-solid fa-user"></i>
-                        </a>
-                    </div>
+                    <span class="ms-2 fs-6 fw-bold text-uppercase text-center">@User.Identity?.Name</span>
                 </div>
             </section>
         </header>
+
         <section class="main_content">
             <div class="left_category">
                 <ul>
                     <li>
-                        <a href="dashboard.html">Dashboard</a>
+                        <a asp-area="" asp-action="AcademicYears">Academic Year</a>
                     </li>
                     <li>
-                        <a href="academicYear.html">Academic Year</a>
-                    </li>
-                    <li>
-                        <a href="semester.html">Semester</a>
+                        <a asp-area="" asp-action="Semesters">Semester</a>
                     </li>
                     <li class="active_link">
-                        <a href="faculty.html">Faculty</a>
+                        <a asp-area="" asp-action="Faculties">Faculty</a>
                     </li>
                     <li>
-                        <a href="account.html">Accounts</a>
+                        <a asp-area="" asp-action="Users">Accounts</a>
                     </li>
                     <li>
-                        <a href="categories.html">Categories</a>
+                        <a asp-area="" asp-action="Categories">Categories</a>
                     </li>
                     <li>
-                        <a href="profile.html">Profile</a>
+                        <a asp-area="Identity" asp-page="/Account/Manage/Profile">Profile</a>
                     </li>
-                    <li>
-                        <a href="#">
-                            Log out
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                        </a>
+                    <li class="log_out">
+                        <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+                            <button type="submit" class="btn btn-outline-success btn-lg me-3 ms-3 log_out">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                            </button>
+                        </form>
                     </li>
                 </ul>
             </div>
@@ -150,31 +117,22 @@
                         </a>
                         <ul>
                             <li>
-                                <a href="dashboard.html">Dashboard</a>
+                                <a asp-area="" asp-action="AcademicYears">Academic Year</a>
                             </li>
                             <li>
-                                <a href="academicYear.html">Academic Year</a>
-                            </li>
-                            <li>
-                                <a href="semester.html">Semester</a>
+                                <a asp-area="" asp-action="Semesters">Semester</a>
                             </li>
                             <li class="active_link">
-                                <a href="faculty.html">Faculty</a>
+                                <a asp-area="" asp-action="Faculties">Faculty</a>
                             </li>
                             <li>
-                                <a href="account.html">Accounts</a>
+                                <a asp-area="" asp-action="Users">Accounts</a>
                             </li>
                             <li>
-                                <a href="categories.html">Categories</a>
+                                <a asp-area="" asp-action="Categories">Categories</a>
                             </li>
                             <li>
-                                <a href="profile.html">Profile</a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    Log out
-                                    <i class="fa-solid fa-right-from-bracket"></i>
-                                </a>
+                                <a asp-area="Identity" asp-page="/Account/Manage/Profile">Profile</a>
                             </li>
                         </ul>
                     </div>
@@ -183,17 +141,23 @@
                 <nav class="subnavigate">
                     <ul>
                         <li>
-                            <a href="faculty.html">Manage Faculty</a>
+                            <a asp-action="Faculties">Manage Faculty</a>
                         </li>
                         <li class="active">
-                            <a href="createFaculty.html">Create New</a>
+                            <a asp-action="FacultyCreate">Create New</a>
                         </li>
                     </ul>
                 </nav>
                 <div id="create_new">
                     <div class="main_information">
                         <h3>Create New Faculty</h3>
-                        <form asp-action="FacultyCreate">
+                        @if (TempData["DeleteSuccessMessage"] != null)
+                        {
+                            <div id="successAlert" class="alert alert-danger" role="alert">
+                                @TempData["DeleteSuccessMessage"]
+                            </div>
+                        }
+                        <form asp-action="FacultyCreate" method="post">
                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                             <div class="author_article ps-4">
                                 <p class="d-block p-2 fs-5 text fw-bold">
@@ -201,19 +165,26 @@
                                     <div class="author_name bg-white p-3 mb-2 rounded">
                                         <input asp-for="FacultyName" type="text"
                                                class="form-control border border-white"
-                                               placeholder="Faculty Name"
-                                               aria-describedby="addon-wrapping">
+                                               placeholder="Input Faculty name (5-50 characters with no special characters )"
+                                               required
+                                               maxlength="50"
+                                               minlength="5"
+                                               pattern="[A-Za-z0-9\s]*"
+                                               oninvalid="this.setCustomValidity('Please enter the correct requested information')"
+                                               oninput="this.setCustomValidity('')">
                                         <span asp-validation-for="FacultyName" class="text-danger"></span>
                                     </div>
                                 </p>
                             </div>
                             <div class="btn_group ps-4 mt-5">
                                 <button type="submit" class="btn btn-outline-success btn-lg me-3">
-                                    <i class="fa-regular fa-floppy-disk"></i> Save
+                                    Save
                                 </button>
-@*                                <button type="button" class="btn btn-outline-warning btn-lg me-3">
-                                    <i class="fa-solid fa-arrow-rotate-left"></i> Reset
-                                </button>*@
+                                <a asp-action="Faculties"
+                                   type="button"
+                                   class="btn btn-outline-secondary btn-lg">
+                                    <i class="fa-solid fa-arrow-left"></i> Back to Created
+                                </a>
                             </div>
                         </form>
                     </div>
