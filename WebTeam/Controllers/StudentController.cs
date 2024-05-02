@@ -29,11 +29,6 @@ namespace WebTeam.Controllers
             _userManager = userManager;
             _logger = logger;
         }
-        public async Task<IActionResult> Index()
-        {
-            var applicationDbContext = _context.Semesters.Include(s => s.AcademicYear).Include(s => s.Faculty);
-            return View(await applicationDbContext.ToListAsync());
-        }
         public async Task<IActionResult> Details(int? id, int? page)
         {
             if (id == null || _context.Semesters == null)

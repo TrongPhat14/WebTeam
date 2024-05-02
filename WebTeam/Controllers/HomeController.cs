@@ -92,11 +92,13 @@ namespace WebTeam.Controllers
                     .Include(a => a.Semester)
                     .Include(a => a.Faculty)
                     .OrderByDescending(a => a.ArticleDate) // Sắp xếp bài viết theo thứ tự giảm dần của CreatedAt
+                    .Where(a => a.Isbool == true)
                     .Take(6)
                     .ToList();
                 var oneMonthAgo = currentDateTime.AddMonths(-1);
                 var randomArticles = _context.Articles
                         .Include(a => a.Author)
+                    .Where(a => a.Isbool == true)
 
                     .OrderBy(a => Guid.NewGuid())
                     .Take(3)
@@ -110,6 +112,8 @@ namespace WebTeam.Controllers
                 // Kiểm tra xem có bài nào trong tháng hiện tại hay không
                 var articlesInCurrentMonth = _context.Articles
                     .Where(a => a.ArticleDate >= startOfCurrentMonth && a.ArticleDate <= currentDateTime)
+                    .Where(a => a.Isbool == true)
+
                     .Any();
 
                 List<Article> topRankedArticles;
@@ -120,6 +124,8 @@ namespace WebTeam.Controllers
                     topRankedArticles = _context.Articles
                         .Include(a => a.Author)
                         .Where(a => a.ArticleDate >= startOfCurrentMonth && a.ArticleDate <= currentDateTime)
+                    .Where(a => a.Isbool == true)
+
                         .OrderByDescending(a => a.NoOfLike)
                         .Take(6)
                         .ToList();
@@ -133,6 +139,8 @@ namespace WebTeam.Controllers
                     topRankedArticles = _context.Articles
                         .Include(a => a.Author)
                         .Where(a => a.ArticleDate >= startOfLastMonth && a.ArticleDate <= lastMonth)
+                    .Where(a => a.Isbool == true)
+
                         .OrderByDescending(a => a.NoOfLike)
                         .Take(6)
                         .ToList();
@@ -156,11 +164,15 @@ namespace WebTeam.Controllers
                     .Include(a => a.Semester)
                     .Include(a => a.Faculty)
                     .OrderByDescending(a => a.ArticleDate) // Sắp xếp bài viết theo thứ tự giảm dần của CreatedAt
+                    .Where(a => a.Isbool == true)
+
                     .Take(6)
                     .ToList();
                 var oneMonthAgo = currentDateTime.AddMonths(-1);
                 var randomArticles = _context.Articles
                         .Include(a => a.Author)
+                    .Where(a => a.Isbool == true)
+
                     .OrderBy(a => Guid.NewGuid())
                     .Take(3)
                     .ToList();
@@ -172,6 +184,8 @@ namespace WebTeam.Controllers
                 // Kiểm tra xem có bài nào trong tháng hiện tại hay không
                 var articlesInCurrentMonth = _context.Articles
                     .Where(a => a.ArticleDate >= startOfCurrentMonth && a.ArticleDate <= currentDateTime)
+                    .Where(a => a.Isbool == true)
+
                     .Any();
 
                 List<Article> topRankedArticles;
@@ -183,6 +197,8 @@ namespace WebTeam.Controllers
                         .Include(a => a.Author)
                         .Where(a => a.ArticleDate >= startOfCurrentMonth && a.ArticleDate <= currentDateTime)
                         .OrderByDescending(a => a.NoOfLike)
+                    .Where(a => a.Isbool == true)
+
                         .Take(6)
                         .ToList();
                 }
@@ -195,6 +211,8 @@ namespace WebTeam.Controllers
                     topRankedArticles = _context.Articles
                         .Include(a => a.Author)
                         .Where(a => a.ArticleDate >= startOfLastMonth && a.ArticleDate <= lastMonth)
+                    .Where(a => a.Isbool == true)
+
                         .OrderByDescending(a => a.NoOfLike)
                         .Take(6)
                         .ToList();
