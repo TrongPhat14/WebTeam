@@ -557,7 +557,7 @@ namespace WebTeam.Controllers
             {
                 try
                 {
-                    article.ArticleDate = new DateTime(2024, 7, 6);
+                    article.ArticleDate =   DateTime.Now;
                     article.Isbool = true;
                     _context.Update(article);
                     await _context.SaveChangesAsync();
